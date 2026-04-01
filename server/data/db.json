@@ -3,7 +3,7 @@
     {
       "id": "1",
       "name": "Eduardo Silveira",
-      "email": "eduardo@acelera.gov.br",
+      "email": "eduardo@quintoandar.com",
       "password": "demo123",
       "role": "coordenador",
       "team": "Região Sul",
@@ -16,7 +16,7 @@
     {
       "id": "2",
       "name": "Carlos Moreira",
-      "email": "carlos@acelera.gov.br",
+      "email": "carlos@quintoandar.com",
       "password": "demo123",
       "role": "supervisor",
       "team": "Equipe Alpha",
@@ -29,7 +29,7 @@
     {
       "id": "3",
       "name": "Ana Lima",
-      "email": "ana@acelera.gov.br",
+      "email": "ana@quintoandar.com",
       "password": "demo123",
       "role": "analista",
       "team": "Equipe Alpha",
@@ -42,7 +42,7 @@
     {
       "id": "4",
       "name": "Renata Mendes",
-      "email": "renata@acelera.gov.br",
+      "email": "renata@quintoandar.com",
       "password": "demo123",
       "role": "supervisor",
       "team": "Equipe Beta",
@@ -55,7 +55,7 @@
     {
       "id": "5",
       "name": "Thiago Pereira",
-      "email": "thiago@acelera.gov.br",
+      "email": "thiago@quintoandar.com",
       "password": "demo123",
       "role": "supervisor",
       "team": "Equipe Gamma",
@@ -68,7 +68,7 @@
     {
       "id": "6",
       "name": "Fernanda Costa",
-      "email": "fernanda@acelera.gov.br",
+      "email": "fernanda@quintoandar.com",
       "password": "demo123",
       "role": "supervisor",
       "team": "Equipe Beta",
@@ -81,7 +81,7 @@
     {
       "id": "7",
       "name": "Roberto Alves",
-      "email": "roberto@acelera.gov.br",
+      "email": "roberto@quintoandar.com",
       "password": "demo123",
       "role": "supervisor",
       "team": "Equipe Gama",
@@ -94,7 +94,7 @@
     {
       "id": "8",
       "name": "João Santos",
-      "email": "joao@acelera.gov.br",
+      "email": "joao@quintoandar.com",
       "password": "demo123",
       "role": "analista",
       "team": "Equipe Alpha",

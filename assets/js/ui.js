@@ -317,7 +317,7 @@ const ACELERA_UI = (() => {
               <div style="padding:1.25rem;background:#f3f3f6;border-radius:0.5rem;text-align:center;">
                 <div style="font-size:1.5rem;margin-bottom:0.5rem;">📧</div>
                 <p style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#717783;margin:0 0 0.25rem;">E-mail</p>
-                <p style="font-size:0.8rem;font-weight:600;color:#004f96;">suporte@acelera.gov.br</p>
+                <p style="font-size:0.8rem;font-weight:600;color:#004f96;">suporte@quintoandar.com</p>
               </div>
               <div style="padding:1.25rem;background:#f3f3f6;border-radius:0.5rem;text-align:center;">
                 <div style="font-size:1.5rem;margin-bottom:0.5rem;">📞</div>
@@ -370,7 +370,7 @@ const ACELERA_UI = (() => {
           <div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
               <div style="grid-column:span 2;"><label style="${labelStyle}">Nome Completo</label><input id="nh-name" style="${inputStyle}" placeholder="Nome Completo" onfocus="this.style.borderBottomColor='#004f96'" onblur="this.style.borderBottomColor='transparent'"/></div>
-              <div><label style="${labelStyle}">E-mail Corporativo</label><input id="nh-email" type="email" style="${inputStyle}" placeholder="usuario@acelera.gov.br" onfocus="this.style.borderBottomColor='#004f96'" onblur="this.style.borderBottomColor='transparent'"/></div>
+              <div><label style="${labelStyle}">E-mail Corporativo</label><input id="nh-email" type="email" style="${inputStyle}" placeholder="usuario@quintoandar.com" onfocus="this.style.borderBottomColor='#004f96'" onblur="this.style.borderBottomColor='transparent'"/></div>
               <div><label style="${labelStyle}">Perfil de Acesso</label>
                 <select id="nh-role" style="${inputStyle}">
                   <option value="analista">Analista</option>

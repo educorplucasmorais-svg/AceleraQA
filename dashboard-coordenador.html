@@ -310,7 +310,7 @@ tailwind.config = {
           </div>
           <div>
             <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail de Notificação</label>
-            <input type="email" placeholder="admin@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"/>
+            <input type="email" placeholder="admin@quintoandar.com" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"/>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
@@ -395,9 +395,9 @@ const MOCK_HOTSPOTS = [
   { id:'h3', unit:'GEFIN', process:'RVV Trimestral', occurrences:6, severity:'mitigacao', description:'Processo de avaliação em revisão', status:'mitigando' }
 ];
 const MOCK_SUPERVISORS = [
-  { id:'s1', name:'Carlos Moreira', email:'carlos@acelera.gov.br', team:'Equipe Alpha', score:84.2, trend:'+1.2', status:'ativo' },
-  { id:'s2', name:'Fernanda Costa', email:'fernanda@acelera.gov.br', team:'Equipe Beta', score:79.8, trend:'-0.5', status:'ativo' },
-  { id:'s3', name:'Roberto Alves', email:'roberto@acelera.gov.br', team:'Equipe Gama', score:91.1, trend:'+3.4', status:'ativo' }
+  { id:'s1', name:'Carlos Moreira', email:'carlos@quintoandar.com', team:'Equipe Alpha', score:84.2, trend:'+1.2', status:'ativo' },
+  { id:'s2', name:'Fernanda Costa', email:'fernanda@quintoandar.com', team:'Equipe Beta', score:79.8, trend:'-0.5', status:'ativo' },
+  { id:'s3', name:'Roberto Alves', email:'roberto@quintoandar.com', team:'Equipe Gama', score:91.1, trend:'+3.4', status:'ativo' }
 ];
 const MOCK_REPORTS = [
   { id:'r1', title:'Relatório Executivo Abril', type:'executivo', createdAt:'2024-04-30' },
@@ -405,12 +405,12 @@ const MOCK_REPORTS = [
   { id:'r3', title:'Engajamento Equipes', type:'engajamento', createdAt:'2024-04-15' }
 ];
 const MOCK_USERS = [
-  { id:'u1', name:'Eduardo Silveira', email:'eduardo@acelera.gov.br', role:'coordenador', team:'Direção', status:'ativo' },
-  { id:'u2', name:'Carlos Moreira', email:'carlos@acelera.gov.br', role:'supervisor', team:'Equipe Alpha', status:'ativo' },
-  { id:'u3', name:'Fernanda Costa', email:'fernanda@acelera.gov.br', role:'supervisor', team:'Equipe Beta', status:'ativo' },
-  { id:'u4', name:'Ana Lima', email:'ana@acelera.gov.br', role:'analista', team:'Equipe Alpha', status:'ativo' },
-  { id:'u5', name:'João Santos', email:'joao@acelera.gov.br', role:'analista', team:'Equipe Alpha', status:'ativo' },
-  { id:'u6', name:'Maria Oliveira', email:'maria@acelera.gov.br', role:'analista', team:'Equipe Beta', status:'inativo' }
+  { id:'u1', name:'Eduardo Silveira', email:'eduardo@quintoandar.com', role:'coordenador', team:'Direção', status:'ativo' },
+  { id:'u2', name:'Carlos Moreira', email:'carlos@quintoandar.com', role:'supervisor', team:'Equipe Alpha', status:'ativo' },
+  { id:'u3', name:'Fernanda Costa', email:'fernanda@quintoandar.com', role:'supervisor', team:'Equipe Beta', status:'ativo' },
+  { id:'u4', name:'Ana Lima', email:'ana@quintoandar.com', role:'analista', team:'Equipe Alpha', status:'ativo' },
+  { id:'u5', name:'João Santos', email:'joao@quintoandar.com', role:'analista', team:'Equipe Alpha', status:'ativo' },
+  { id:'u6', name:'Maria Oliveira', email:'maria@quintoandar.com', role:'analista', team:'Equipe Beta', status:'inativo' }
 ];
 
 let hotspotFilter = 'todos';
@@ -786,7 +786,7 @@ function openNovoSupervisorModal() {
       </div>
       <div>
         <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail</label>
-        <input id="ns-email" type="email" placeholder="email@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        <input id="ns-email" type="email" placeholder="email@quintoandar.com" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
       </div>
       <div>
         <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Equipe</label>
@@ -964,7 +964,7 @@ function openNovoUsuarioModal() {
       </div>
       <div>
         <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail *</label>
-        <input id="nu-email" type="email" placeholder="email@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        <input id="nu-email" type="email" placeholder="email@quintoandar.com" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
       </div>
       <div>
         <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Papel *</label>

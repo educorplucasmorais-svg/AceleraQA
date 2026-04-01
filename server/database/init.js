@@ -128,14 +128,14 @@ if (count.n === 0) {
       VALUES (@id, @name, @email, @password, @role, @team, @avatar, @score, @trend, @status, @created_at)
     `);
     const users = [
-      { id:'1', name:'Eduardo Silveira', email:'eduardo@acelera.gov.br', password:'demo123', role:'coordenador', team:'Região Sul', avatar:'ES', score:88.0, trend:'+0.8', status:'ativo', created_at:'2024-01-15' },
-      { id:'2', name:'Carlos Moreira',   email:'carlos@acelera.gov.br',  password:'demo123', role:'supervisor',  team:'Equipe Alpha', avatar:'CM', score:84.2, trend:'+1.2', status:'ativo', created_at:'2024-01-20' },
-      { id:'3', name:'Ana Lima',         email:'ana@acelera.gov.br',     password:'demo123', role:'analista',    team:'Equipe Alpha', avatar:'AL', score:84.2, trend:'+0.5', status:'ativo', created_at:'2024-02-01' },
-      { id:'4', name:'Renata Mendes',    email:'renata@acelera.gov.br',  password:'demo123', role:'supervisor',  team:'Equipe Beta',  avatar:'RM', score:79.8, trend:'-0.5', status:'ativo', created_at:'2024-01-10' },
-      { id:'5', name:'Thiago Pereira',   email:'thiago@acelera.gov.br',  password:'demo123', role:'supervisor',  team:'Equipe Gamma', avatar:'TP', score:91.1, trend:'+3.4', status:'ativo', created_at:'2024-01-12' },
-      { id:'6', name:'Fernanda Costa',   email:'fernanda@acelera.gov.br',password:'demo123', role:'supervisor',  team:'Equipe Beta',  avatar:'FC', score:79.8, trend:'-0.5', status:'ativo', created_at:'2024-01-10' },
-      { id:'7', name:'Roberto Alves',    email:'roberto@acelera.gov.br', password:'demo123', role:'supervisor',  team:'Equipe Gama',  avatar:'RA', score:91.1, trend:'+3.4', status:'ativo', created_at:'2024-01-08' },
-      { id:'8', name:'João Santos',      email:'joao@acelera.gov.br',    password:'demo123', role:'analista',    team:'Equipe Alpha', avatar:'JS', score:78.5, trend:'+0.2', status:'ativo', created_at:'2024-02-10' },
+      { id:'1', name:'Eduardo Silveira', email:'eduardo@quintoandar.com', password:'demo123', role:'coordenador', team:'Região Sul', avatar:'ES', score:88.0, trend:'+0.8', status:'ativo', created_at:'2024-01-15' },
+      { id:'2', name:'Carlos Moreira',   email:'carlos@quintoandar.com',  password:'demo123', role:'supervisor',  team:'Equipe Alpha', avatar:'CM', score:84.2, trend:'+1.2', status:'ativo', created_at:'2024-01-20' },
+      { id:'3', name:'Ana Lima',         email:'ana@quintoandar.com',     password:'demo123', role:'analista',    team:'Equipe Alpha', avatar:'AL', score:84.2, trend:'+0.5', status:'ativo', created_at:'2024-02-01' },
+      { id:'4', name:'Renata Mendes',    email:'renata@quintoandar.com',  password:'demo123', role:'supervisor',  team:'Equipe Beta',  avatar:'RM', score:79.8, trend:'-0.5', status:'ativo', created_at:'2024-01-10' },
+      { id:'5', name:'Thiago Pereira',   email:'thiago@quintoandar.com',  password:'demo123', role:'supervisor',  team:'Equipe Gamma', avatar:'TP', score:91.1, trend:'+3.4', status:'ativo', created_at:'2024-01-12' },
+      { id:'6', name:'Fernanda Costa',   email:'fernanda@quintoandar.com',password:'demo123', role:'supervisor',  team:'Equipe Beta',  avatar:'FC', score:79.8, trend:'-0.5', status:'ativo', created_at:'2024-01-10' },
+      { id:'7', name:'Roberto Alves',    email:'roberto@quintoandar.com', password:'demo123', role:'supervisor',  team:'Equipe Gama',  avatar:'RA', score:91.1, trend:'+3.4', status:'ativo', created_at:'2024-01-08' },
+      { id:'8', name:'João Santos',      email:'joao@quintoandar.com',    password:'demo123', role:'analista',    team:'Equipe Alpha', avatar:'JS', score:78.5, trend:'+0.2', status:'ativo', created_at:'2024-02-10' },
     ];
     users.forEach(u => insertUser.run(u));
 
