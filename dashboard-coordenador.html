@@ -113,10 +113,22 @@ tailwind.config = {
     <section id="section-visao-geral" class="content-section space-y-6">
       <div class="grid grid-cols-4 gap-4">
         <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5 border-l-4 border-l-blue-600">
-          <div class="text-xs text-on-surface-variant uppercase tracking-wider mb-1">Score Médio</div>
-          <div class="text-3xl font-bold text-on-surface jet-mono">87.4</div>
-          <div class="text-xs text-slate-400 mt-1">da organização</div>
-          <div class="text-xs text-green-600 font-semibold mt-2">▲ +1.2</div>
+          <!-- TGT row -->
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">TGT · Meta</span>
+            <span class="jet text-sm font-bold text-on-surface-variant">90</span>
+          </div>
+          <!-- Resultado row -->
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Resultado</span>
+            <span class="jet text-sm font-bold text-on-surface">87.4</span>
+          </div>
+          <!-- % Atingimento row -->
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">% Atingimento</span>
+            <span class="jet text-base font-extrabold text-amber-500">97.1%</span>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-1">Score Médio da Organização</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5 border-l-4 border-l-green-600">
           <div class="text-xs text-on-surface-variant uppercase tracking-wider mb-1">Analistas Ativos</div>
