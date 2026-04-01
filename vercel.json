@@ -4,15 +4,48 @@
     {
       "src": "server/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "assets/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "server/index.js"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/login.html",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/dashboard-coordenador.html",
+      "dest": "/dashboard-coordenador.html"
+    },
+    {
+      "src": "/dashboard-supervisor.html",
+      "dest": "/dashboard-supervisor.html"
+    },
+    {
+      "src": "/dashboard-analista.html",
+      "dest": "/dashboard-analista.html"
+    },
+    {
+      "src": "/",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/login.html"
     }
-  ],
-  "env": {
-    "JWT_SECRET": "@jwt_secret"
-  }
+  ]
 }
