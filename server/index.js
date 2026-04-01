@@ -20,8 +20,14 @@ app.use('/api/hotspots', require('./middleware/auth'), require('./routes/hotspot
 
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, '..', 'index.html')));
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`\n  🚀 ACELERA Backend rodando em http://localhost:${PORT}`);
-  console.log(`  ➜  Login: http://localhost:${PORT}/login.html\n`);
-});
+// Vercel serverless: export app
+module.exports = app;
+
+// Local dev: start server only when run directly
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`\n  🚀 ACELERA Backend rodando em http://localhost:${PORT}`);
+    console.log(`  ➜  Login: http://localhost:${PORT}/login.html\n`);
+  });
+}
