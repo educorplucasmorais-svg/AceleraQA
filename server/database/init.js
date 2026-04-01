@@ -1,12 +1,21 @@
 'use strict';
-// Auto-fallback: use native SQLite on local dev; pure-JS in-memory store on Vercel/serverless
-try { require('better-sqlite3'); } catch (_) {
-  console.warn('⚠️  better-sqlite3 not available — using in-memory store');
+// On Vercel/serverless: always use pure-JS in-memory store — do NOT touch native modules
+if (process.env.VERCEL || process.env.VERCEL_ENV) {
+  console.log('🌐 Vercel mode — using in-memory store');
   module.exports = require('./store');
-  return; // valid in CommonJS (module wrapper is a function)
+  return;
 }
 
-const Database = require('better-sqlite3');
+// Local dev: use better-sqlite3 (native, WAL mode, full persistence)
+let Database;
+try {
+  Database = require('better-sqlite3');
+} catch (_) {
+  console.warn('⚠️  better-sqlite3 not available — using in-memory store');
+  module.exports = require('./store');
+  return;
+}
+
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
