@@ -619,13 +619,17 @@ async function iniciarIntervencao(unit) {
 
 function marcarResolvido(id) { showToast('Hotspot marcado como resolvido', 'success'); }
 
+let _supervisoresList = [];
+
 async function loadSupervisores() {
   let supervisors = MOCK_SUPERVISORS;
   try {
     const data = await ACELERA_API.getUsers();
-    const s = (data?.users || []).filter(u => u.role === 'supervisor');
+    const arr = Array.isArray(data?.users) ? data.users : Array.isArray(data) ? data : [];
+    const s = arr.filter(u => u.role === 'supervisor');
     if (s.length) supervisors = s;
   } catch(e) {}
+  _supervisoresList = supervisors;
   const el = document.getElementById('supervisores-table');
   if (!el) return;
   el.innerHTML = `<table class="w-full text-sm">
@@ -638,7 +642,7 @@ async function loadSupervisores() {
       <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Ação</th>
     </tr></thead>
     <tbody class="divide-y divide-outline-variant">
-      ${supervisors.map(s => `<tr class="hover:bg-surface-container-low">
+      ${supervisors.map((s, idx) => `<tr class="hover:bg-surface-container-low">
         <td class="px-4 py-3">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 primary-gradient rounded-full flex items-center justify-center text-white text-xs font-bold">${(s.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
@@ -648,79 +652,166 @@ async function loadSupervisores() {
             </div>
           </div>
         </td>
-        <td class="px-4 py-3 text-on-surface-variant text-sm">${s.team}</td>
-        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold jet-mono ${(s.score||0)>=90?'bg-green-100 text-green-700':(s.score||0)>=80?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'}">${s.score}</span></td>
-        <td class="px-4 py-3 text-xs font-semibold ${(s.trend||'').startsWith('+')?'text-green-600':'text-red-500'}">${s.trend||'—'}</td>
-        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${s.status==='ativo'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${s.status}</span></td>
+        <td class="px-4 py-3 text-on-surface-variant text-sm">${s.team||'—'}</td>
+        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold jet-mono ${(s.score||0)>=90?'bg-green-100 text-green-700':(s.score||0)>=80?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'}">${s.score||'—'}</span></td>
+        <td class="px-4 py-3 text-xs font-semibold ${(s.trend||'').toString().startsWith('+')?'text-green-600':'text-red-500'}">${s.trend||'—'}</td>
+        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${(s.status||'ativo')==='ativo'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${s.status||'ativo'}</span></td>
         <td class="px-4 py-3 space-x-2">
-          <button onclick="showToast('Detalhes de ${s.name}', 'info')" class="text-xs text-blue-600 hover:underline">Ver Detalhes</button>
-          <button onclick="openFeedbackSupervisorModal('${s.name}')" class="text-xs text-slate-500 hover:underline">Feedback</button>
-          <button onclick="openOneononeModal('${s.name}')" class="text-xs text-slate-500 hover:underline">1:1</button>
+          <button onclick="openDetalhesSupervisorModal(${idx})" class="text-xs text-blue-600 hover:underline font-medium">Ver Detalhes</button>
+          <button onclick="openFeedbackSupervisorModal(${idx})" class="text-xs text-slate-500 hover:underline">Feedback</button>
+          <button onclick="openOneononeModal(${idx})" class="text-xs text-slate-500 hover:underline">1:1</button>
+          <button onclick="confirmarExclusaoUser('${s.id||idx}','${s.name}')" class="text-xs text-red-500 hover:underline">Remover</button>
         </td>
       </tr>`).join('')}
     </tbody></table>`;
 }
 
-function openFeedbackSupervisorModal(name) {
-  openModal('Feedback para ' + name, `
-    <div class="space-y-3">
-      <div>
-        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Tipo</label>
-        <select class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"><option>positivo</option><option>construtivo</option><option>reconhecimento</option></select>
+function openDetalhesSupervisorModal(idx) {
+  const s = _supervisoresList[idx];
+  if (!s) return;
+  openModal('Detalhes — ' + s.name, `
+    <div class="space-y-4">
+      <div class="flex items-center gap-4 pb-3 border-b border-outline-variant">
+        <div class="w-14 h-14 primary-gradient rounded-full flex items-center justify-center text-white text-lg font-bold">${(s.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+        <div>
+          <div class="font-bold text-on-surface text-base">${s.name}</div>
+          <div class="text-sm text-slate-400">${s.email||'—'}</div>
+          <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700">supervisor</span>
+        </div>
       </div>
-      <div>
-        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Título</label>
-        <input type="text" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div class="bg-surface-container-low rounded-xl p-3">
+          <div class="text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Score</div>
+          <div class="text-xl font-bold jet-mono text-primary">${s.score||'—'}</div>
+        </div>
+        <div class="bg-surface-container-low rounded-xl p-3">
+          <div class="text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Tendência</div>
+          <div class="text-xl font-bold jet-mono ${(s.trend||'').toString().startsWith('+')?'text-green-600':'text-red-500'}">${s.trend||'—'}</div>
+        </div>
+        <div class="bg-surface-container-low rounded-xl p-3">
+          <div class="text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Status</div>
+          <div class="text-sm font-bold ${(s.status||'ativo')==='ativo'?'text-green-600':'text-red-500'}">${s.status||'ativo'}</div>
+        </div>
       </div>
-      <div>
-        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Conteúdo</label>
-        <textarea rows="3" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"></textarea>
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div><span class="text-on-surface-variant text-xs uppercase tracking-wider">Equipe</span><div class="font-medium mt-0.5">${s.team||'—'}</div></div>
+        <div><span class="text-on-surface-variant text-xs uppercase tracking-wider">Membro desde</span><div class="font-medium mt-0.5">${s.createdAt||'—'}</div></div>
       </div>
-      <button onclick="closeModal();showToast('Feedback enviado com sucesso!','success')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Enviar Feedback</button>
+      <div class="flex gap-2 pt-2">
+        <button onclick="openEditUserModal(${idx}, 'supervisor')" class="flex-1 px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Editar Perfil</button>
+        <button onclick="closeModal()" class="px-4 py-2 bg-surface-container text-on-surface rounded-lg text-xs font-semibold uppercase tracking-wider hover:bg-surface-container-high">Fechar</button>
+      </div>
     </div>
   `);
 }
 
-function openOneononeModal(name) {
-  openModal('Agendar 1:1 com ' + name, `
+function openFeedbackSupervisorModal(idx) {
+  const s = _supervisoresList[idx];
+  if (!s) return openModal('Feedback', '<p>Supervisor não encontrado.</p>');
+  openModal('Feedback para ' + s.name, `
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Tipo</label>
+        <select id="fb-type" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"><option value="positivo">Positivo</option><option value="construtivo">Construtivo</option><option value="reconhecimento">Reconhecimento</option></select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Título</label>
+        <input id="fb-title" type="text" placeholder="Título do feedback" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Conteúdo</label>
+        <textarea id="fb-content" rows="3" placeholder="Descreva o feedback..." class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"></textarea>
+      </div>
+      <button onclick="enviarFeedbackSupervisor('${s.id||s.name}')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Enviar Feedback</button>
+    </div>
+  `);
+}
+
+async function enviarFeedbackSupervisor(userId) {
+  const type = document.getElementById('fb-type')?.value;
+  const title = document.getElementById('fb-title')?.value;
+  const content = document.getElementById('fb-content')?.value;
+  if (!title || !content) { showToast('Preencha todos os campos', 'error'); return; }
+  try {
+    await ACELERA_API.createFeedback({ userId, type, title, content, tags: [] });
+    closeModal();
+    showToast('Feedback enviado com sucesso!', 'success');
+  } catch(e) { showToast('Erro ao enviar feedback', 'error'); }
+}
+
+function openOneononeModal(idx) {
+  const s = _supervisoresList[idx];
+  if (!s) return;
+  openModal('Agendar 1:1 com ' + s.name, `
     <div class="space-y-3">
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Data</label>
-          <input type="date" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+          <input id="oo-date" type="date" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
         </div>
         <div>
           <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Hora</label>
-          <input type="time" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+          <input id="oo-time" type="time" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
         </div>
       </div>
       <div>
-        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Notas</label>
-        <textarea rows="2" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"></textarea>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Pauta</label>
+        <textarea id="oo-notes" rows="2" placeholder="Pontos a discutir..." class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"></textarea>
       </div>
-      <button onclick="closeModal();showToast('1:1 agendado com sucesso!','success')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Agendar</button>
+      <button onclick="agendarOneonone('${s.id||s.name}')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Agendar 1:1</button>
     </div>
   `);
+}
+
+async function agendarOneonone(supervisorId) {
+  const date = document.getElementById('oo-date')?.value;
+  const time = document.getElementById('oo-time')?.value;
+  const notes = document.getElementById('oo-notes')?.value;
+  if (!date || !time) { showToast('Preencha data e hora', 'error'); return; }
+  try {
+    const user = ACELERA_API.getUser();
+    await ACELERA_API.createOneonone({ supervisorId, analistaId: user?.id, title: '1:1 Coordenador', date, time, notes: notes||'' });
+    closeModal();
+    showToast('1:1 agendado com sucesso!', 'success');
+  } catch(e) { showToast('Erro ao agendar 1:1', 'error'); }
 }
 
 function openNovoSupervisorModal() {
   openModal('Novo Supervisor', `
     <div class="space-y-3">
       <div>
-        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Nome</label>
-        <input type="text" placeholder="Nome completo" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Nome Completo</label>
+        <input id="ns-name" type="text" placeholder="Nome completo" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
       </div>
       <div>
         <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail</label>
-        <input type="email" placeholder="email@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        <input id="ns-email" type="email" placeholder="email@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
       </div>
       <div>
         <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Equipe</label>
-        <input type="text" placeholder="Nome da equipe" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        <input id="ns-team" type="text" placeholder="Nome da equipe" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
       </div>
-      <button onclick="closeModal();showToast('Funcionalidade em desenvolvimento','info')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Salvar</button>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Senha Inicial</label>
+        <input id="ns-pass" type="password" placeholder="••••••••" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <button onclick="criarSupervisor()" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Criar Supervisor</button>
     </div>
   `);
+}
+
+async function criarSupervisor() {
+  const name = document.getElementById('ns-name')?.value?.trim();
+  const email = document.getElementById('ns-email')?.value?.trim();
+  const team = document.getElementById('ns-team')?.value?.trim();
+  const password = document.getElementById('ns-pass')?.value || 'demo123';
+  if (!name || !email || !team) { showToast('Preencha todos os campos obrigatórios', 'error'); return; }
+  try {
+    await ACELERA_API.createUser({ name, email, team, role: 'supervisor', password, status: 'ativo', avatar: name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() });
+    closeModal();
+    showToast('Supervisor criado com sucesso!', 'success');
+    loadSupervisores();
+  } catch(e) { showToast('Erro ao criar supervisor: ' + (e.message||''), 'error'); }
 }
 
 async function loadRelatorios() {
@@ -733,12 +824,16 @@ async function loadRelatorios() {
   if (el) el.innerHTML = renderReportsTable(reports);
 }
 
+let _usersList = [];
+
 async function loadAdministracao() {
   let users = MOCK_USERS;
   try {
     const data = await ACELERA_API.getUsers();
-    if (data?.users?.length) users = data.users;
+    const arr = Array.isArray(data?.users) ? data.users : Array.isArray(data) ? data : [];
+    if (arr.length) users = arr;
   } catch(e) {}
+  _usersList = users;
   const roleBadge = (r) => {
     const map = { coordenador:'bg-blue-100 text-blue-700', supervisor:'bg-orange-100 text-orange-700', analista:'bg-green-100 text-green-700' };
     return `<span class="px-2 py-0.5 rounded-full text-xs font-semibold ${map[r]||'bg-slate-100 text-slate-600'}">${r}</span>`;
@@ -754,7 +849,7 @@ async function loadAdministracao() {
       <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Ações</th>
     </tr></thead>
     <tbody class="divide-y divide-outline-variant">
-      ${users.map(u => `<tr class="hover:bg-surface-container-low">
+      ${users.map((u, idx) => `<tr class="hover:bg-surface-container-low" id="user-row-${u.id||idx}">
         <td class="px-4 py-3">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 primary-gradient rounded-full flex items-center justify-center text-white text-xs font-bold">${(u.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
@@ -765,40 +860,145 @@ async function loadAdministracao() {
           </div>
         </td>
         <td class="px-4 py-3">${roleBadge(u.role)}</td>
-        <td class="px-4 py-3 text-on-surface-variant text-sm">${u.team}</td>
-        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${u.status==='ativo'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${u.status}</span></td>
-        <td class="px-4 py-3">
-          <button onclick="showToast('Editando ${u.name}','info')" class="text-xs text-blue-600 hover:underline mr-2">Editar</button>
-          <button onclick="showToast('Usuário removido','warning')" class="text-xs text-red-500 hover:underline">Excluir</button>
+        <td class="px-4 py-3 text-on-surface-variant text-sm">${u.team||'—'}</td>
+        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${(u.status||'ativo')==='ativo'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${u.status||'ativo'}</span></td>
+        <td class="px-4 py-3 space-x-2">
+          <button onclick="openEditUserModal(${idx}, 'admin')" class="text-xs text-blue-600 hover:underline font-medium">Editar</button>
+          <button onclick="confirmarExclusaoUser('${u.id||idx}','${u.name}')" class="text-xs text-red-500 hover:underline">Excluir</button>
         </td>
       </tr>`).join('')}
     </tbody></table>`;
+}
+
+function openEditUserModal(idx, context) {
+  const list = context === 'supervisor' ? _supervisoresList : _usersList;
+  const u = list[idx];
+  if (!u) return;
+  openModal('Editar Usuário — ' + u.name, `
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Nome</label>
+        <input id="edit-name" type="text" value="${u.name||''}" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail</label>
+        <input id="edit-email" type="email" value="${u.email||''}" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Papel</label>
+        <select id="edit-role" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
+          <option value="coordenador" ${u.role==='coordenador'?'selected':''}>Coordenador</option>
+          <option value="supervisor" ${u.role==='supervisor'?'selected':''}>Supervisor</option>
+          <option value="analista" ${u.role==='analista'?'selected':''}>Analista</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Equipe</label>
+        <input id="edit-team" type="text" value="${u.team||''}" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Status</label>
+        <select id="edit-status" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
+          <option value="ativo" ${(u.status||'ativo')==='ativo'?'selected':''}>Ativo</option>
+          <option value="inativo" ${u.status==='inativo'?'selected':''}>Inativo</option>
+        </select>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="salvarEdicaoUser('${u.id}','${context}')" class="flex-1 px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Salvar Alterações</button>
+        <button onclick="closeModal()" class="px-4 py-2 bg-surface-container text-on-surface rounded-lg text-xs font-semibold uppercase tracking-wider hover:bg-surface-container-high">Cancelar</button>
+      </div>
+    </div>
+  `);
+}
+
+async function salvarEdicaoUser(userId, context) {
+  const name = document.getElementById('edit-name')?.value?.trim();
+  const email = document.getElementById('edit-email')?.value?.trim();
+  const role = document.getElementById('edit-role')?.value;
+  const team = document.getElementById('edit-team')?.value?.trim();
+  const status = document.getElementById('edit-status')?.value;
+  if (!name || !email) { showToast('Nome e e-mail são obrigatórios', 'error'); return; }
+  try {
+    await ACELERA_API.updateUser(userId, { name, email, role, team, status });
+    closeModal();
+    showToast('Usuário atualizado com sucesso!', 'success');
+    if (context === 'supervisor') loadSupervisores(); else loadAdministracao();
+  } catch(e) { showToast('Erro ao atualizar usuário', 'error'); }
+}
+
+function confirmarExclusaoUser(userId, userName) {
+  openModal('Confirmar Exclusão', `
+    <div class="space-y-4">
+      <div class="flex items-center gap-3 p-3 bg-red-50 rounded-xl border border-red-100">
+        <span class="material-symbols-outlined text-red-500">warning</span>
+        <div>
+          <div class="font-semibold text-red-700 text-sm">Confirmar remoção</div>
+          <div class="text-xs text-red-600">O usuário <strong>${userName}</strong> será removido permanentemente.</div>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="excluirUser('${userId}')" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:bg-red-700">Sim, Remover</button>
+        <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-surface-container text-on-surface rounded-lg text-xs font-semibold uppercase tracking-wider hover:bg-surface-container-high">Cancelar</button>
+      </div>
+    </div>
+  `);
+}
+
+async function excluirUser(userId) {
+  try {
+    await ACELERA_API.deleteUser(userId);
+    closeModal();
+    showToast('Usuário removido com sucesso', 'success');
+    loadAdministracao();
+    loadSupervisores();
+  } catch(e) { showToast('Erro ao remover usuário', 'error'); }
 }
 
 function openNovoUsuarioModal() {
   openModal('Adicionar Usuário', `
     <div class="space-y-3">
       <div>
-        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Nome</label>
-        <input type="text" placeholder="Nome completo" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Nome Completo *</label>
+        <input id="nu-name" type="text" placeholder="Nome completo" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
       </div>
       <div>
-        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail</label>
-        <input type="email" placeholder="email@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail *</label>
+        <input id="nu-email" type="email" placeholder="email@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
       </div>
       <div>
-        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Papel</label>
-        <select class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
-          <option>coordenador</option><option>supervisor</option><option>analista</option>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Papel *</label>
+        <select id="nu-role" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
+          <option value="analista">Analista</option>
+          <option value="supervisor">Supervisor</option>
+          <option value="coordenador">Coordenador</option>
         </select>
       </div>
       <div>
-        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Equipe</label>
-        <input type="text" placeholder="Nome da equipe" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Equipe *</label>
+        <input id="nu-team" type="text" placeholder="Nome da equipe" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
       </div>
-      <button onclick="closeModal();showToast('Usuário adicionado com sucesso!','success')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Salvar</button>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Senha Inicial</label>
+        <input id="nu-pass" type="password" placeholder="demo123 (padrão)" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <button onclick="criarUsuario()" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Criar Usuário</button>
     </div>
   `);
+}
+
+async function criarUsuario() {
+  const name = document.getElementById('nu-name')?.value?.trim();
+  const email = document.getElementById('nu-email')?.value?.trim();
+  const role = document.getElementById('nu-role')?.value;
+  const team = document.getElementById('nu-team')?.value?.trim();
+  const password = document.getElementById('nu-pass')?.value || 'demo123';
+  if (!name || !email || !team) { showToast('Preencha todos os campos obrigatórios (*)', 'error'); return; }
+  try {
+    await ACELERA_API.createUser({ name, email, role, team, password, status: 'ativo', avatar: name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() });
+    closeModal();
+    showToast(`Usuário ${name} criado com sucesso!`, 'success');
+    loadAdministracao();
+  } catch(e) { showToast('Erro ao criar usuário: ' + (e.message||''), 'error'); }
 }
 
 function salvarConfiguracoes() { showToast('Configurações salvas com sucesso!', 'success'); }

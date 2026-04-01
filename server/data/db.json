@@ -8,6 +8,9 @@
       "role": "coordenador",
       "team": "Região Sul",
       "avatar": "ES",
+      "score": 88.0,
+      "trend": "+0.8",
+      "status": "ativo",
       "createdAt": "2024-01-15"
     },
     {
@@ -18,6 +21,9 @@
       "role": "supervisor",
       "team": "Equipe Alpha",
       "avatar": "CM",
+      "score": 84.2,
+      "trend": "+1.2",
+      "status": "ativo",
       "createdAt": "2024-01-20"
     },
     {
@@ -28,6 +34,9 @@
       "role": "analista",
       "team": "Equipe Alpha",
       "avatar": "AL",
+      "score": 84.2,
+      "trend": "+0.5",
+      "status": "ativo",
       "createdAt": "2024-02-01"
     },
     {
@@ -38,6 +47,9 @@
       "role": "supervisor",
       "team": "Equipe Beta",
       "avatar": "RM",
+      "score": 79.8,
+      "trend": "-0.5",
+      "status": "ativo",
       "createdAt": "2024-01-10"
     },
     {
@@ -48,7 +60,49 @@
       "role": "supervisor",
       "team": "Equipe Gamma",
       "avatar": "TP",
+      "score": 91.1,
+      "trend": "+3.4",
+      "status": "ativo",
       "createdAt": "2024-01-12"
+    },
+    {
+      "id": "6",
+      "name": "Fernanda Costa",
+      "email": "fernanda@acelera.gov.br",
+      "password": "demo123",
+      "role": "supervisor",
+      "team": "Equipe Beta",
+      "avatar": "FC",
+      "score": 79.8,
+      "trend": "-0.5",
+      "status": "ativo",
+      "createdAt": "2024-01-10"
+    },
+    {
+      "id": "7",
+      "name": "Roberto Alves",
+      "email": "roberto@acelera.gov.br",
+      "password": "demo123",
+      "role": "supervisor",
+      "team": "Equipe Gama",
+      "avatar": "RA",
+      "score": 91.1,
+      "trend": "+3.4",
+      "status": "ativo",
+      "createdAt": "2024-01-08"
+    },
+    {
+      "id": "8",
+      "name": "João Santos",
+      "email": "joao@acelera.gov.br",
+      "password": "demo123",
+      "role": "analista",
+      "team": "Equipe Alpha",
+      "avatar": "JS",
+      "score": 78.5,
+      "trend": "+0.2",
+      "status": "ativo",
+      "createdAt": "2024-02-10"
     }
   ],
   "feedbacks": [

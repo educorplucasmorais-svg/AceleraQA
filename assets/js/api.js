@@ -42,4 +42,8 @@ const ACELERA_API = {
   deleteFeedback: (id) => ACELERA_API.request(`/feedbacks/${id}`, { method: 'DELETE' }),
   updateFeedback: (id, data) => ACELERA_API.request(`/feedbacks/${id}`, { method: 'PUT', body: data }),
   createReport: (data) => ACELERA_API.request('/reports', { method: 'POST', body: data }),
+  createUser: (data) => ACELERA_API.request('/users', { method: 'POST', body: data }),
+  updateUser: (id, data) => ACELERA_API.request(`/users/${id}`, { method: 'PUT', body: data }),
+  deleteUser: (id) => ACELERA_API.request(`/users/${id}`, { method: 'DELETE' }),
+  getUserById: (id) => ACELERA_API.request(`/users/${id}`),
 };

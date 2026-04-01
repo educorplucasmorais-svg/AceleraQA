@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
     const memberIds = team ? team.members : [];
     users = users.filter(u => memberIds.includes(u.id) || u.id === id);
   }
-  res.json(users.map(sanitize));
+  res.json({ users: users.map(sanitize) });
 });
 
 router.get('/:id', (req, res) => {
@@ -46,6 +46,17 @@ router.post('/', (req, res) => {
   db.users.push(user);
   writeDB(db);
   res.status(201).json(sanitize(user));
+});
+
+router.delete('/:id', (req, res) => {
+  const { role } = req.user;
+  if (!['coordenador'].includes(role)) return res.status(403).json({ error: 'Sem permissão' });
+  const db = readDB();
+  const idx = db.users.findIndex(u => u.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Usuário não encontrado' });
+  db.users.splice(idx, 1);
+  writeDB(db);
+  res.json({ success: true });
 });
 
 module.exports = router;
