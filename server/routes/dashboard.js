@@ -1,77 +1,67 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+const db = require('../database/init');
 const router = express.Router();
 
-function readDB() {
-  return JSON.parse(fs.readFileSync(path.join(__dirname, '../data/db.json'), 'utf8'));
-}
-
 router.get('/', (req, res) => {
-  const db = readDB();
   const { id, role } = req.user;
 
-  const userNotifications = db.notifications.filter(n => n.userId === id);
+  const userNotifications = db.prepare('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC').all(id)
+    .map(n => ({ ...n, read: n.read === 1 }));
 
-  if (role === 'coordenador') {
-    const supervisors = db.users.filter(u => u.role === 'supervisor');
-    const analysts = db.users.filter(u => u.role === 'analista');
+  const effectiveRole = (role === 'admin') ? 'coordenador' : role;
+
+  if (effectiveRole === 'coordenador') {
+    const supervisors = db.prepare("SELECT * FROM users WHERE role = 'supervisor'").all();
+    const analysts = db.prepare("SELECT * FROM users WHERE role = 'analista'").all();
+    const hotspots = db.prepare('SELECT * FROM hotspots ORDER BY rank ASC').all().map(h => ({
+      ...h, agents: JSON.parse(h.agents||'[]'), actions: JSON.parse(h.actions||'[]')
+    }));
     return res.json({
+      role: role,
       kpis: {
-        performance: 94.2,
-        trend: 2.4,
-        supervisors: supervisors.length,
-        analysts: analysts.length,
-        compliance: 88,
-        hotspots: db.hotspots.filter(h => h.status === 'critico').length
+        performance: 94.2, trend: 2.4,
+        supervisors: supervisors.length, analysts: analysts.length,
+        compliance: 88, hotspots: hotspots.filter(h => h.status === 'critico').length
       },
-      hotspots: db.hotspots,
-      supervisorRanking: supervisors.map(s => ({
-        ...s,
-        rvv: Math.floor(Math.random() * 20 + 80),
-        aceite: (Math.random() * 10 + 90).toFixed(1)
-      })),
+      hotspots,
+      supervisorRanking: supervisors.map(s => ({ ...s, rvv: 80 + Math.floor(Math.random()*20), aceite: (90 + Math.random()*10).toFixed(1) })),
       notifications: userNotifications,
-      reports: db.reports
+      reports: db.prepare('SELECT * FROM reports ORDER BY generated_at DESC').all()
     });
   }
 
-  if (role === 'supervisor') {
-    const myTeam = db.teams.find(t => t.supervisorId === id);
-    const memberIds = myTeam ? myTeam.members : [];
-    const members = db.users.filter(u => memberIds.includes(u.id));
-    const myFeedbacks = db.feedbacks.filter(f => f.authorId === id);
-    const myOneonones = db.oneonones.filter(o => o.supervisorId === id);
+  if (effectiveRole === 'supervisor') {
+    const myTeam = db.prepare('SELECT * FROM teams WHERE supervisor_id = ?').get(id);
+    const memberIds = myTeam ? JSON.parse(myTeam.members || '[]') : [];
+    const members = memberIds.length ? db.prepare(`SELECT * FROM users WHERE id IN (${memberIds.map(()=>'?').join(',')})`).all(...memberIds) : [];
     return res.json({
+      role: role,
       rvv: { value: 88.4, trend: 2.1 },
       team: members,
-      feedbacks: myFeedbacks,
-      oneonones: myOneonones,
+      feedbacks: db.prepare('SELECT * FROM feedbacks WHERE author_id = ? ORDER BY created_at DESC').all(id),
+      oneonones: db.prepare('SELECT * FROM oneonones WHERE supervisor_id = ? ORDER BY date DESC').all(id),
       notifications: userNotifications,
-      aceleradores: 4.8,
-      deflatores: -2.4
+      aceleradores: 4.8, deflatores: -2.4
     });
   }
 
-  if (role === 'analista') {
-    const myFeedbacks = db.feedbacks.filter(f => f.userId === id);
-    const myOneonones = db.oneonones.filter(o => o.analistaId === id);
-    const myDocs = db.documents.filter(d => d.userId === id);
-    const nextOneonone = myOneonones.find(o => o.status === 'agendado');
+  if (effectiveRole === 'analista') {
+    const myOneonones = db.prepare('SELECT * FROM oneonones WHERE analista_id = ? ORDER BY date DESC').all(id);
     return res.json({
+      role: role,
       score: { value: 84.2, trend: 2.4, quality: 92, speed: 76 },
       rvv: { value: 12400, target: 15000 },
       quartil: 'Q1',
-      feedbacks: myFeedbacks,
+      feedbacks: db.prepare('SELECT * FROM feedbacks WHERE user_id = ? ORDER BY created_at DESC').all(id),
       oneonones: myOneonones,
-      nextOneonone,
-      documents: myDocs,
+      nextOneonone: myOneonones.find(o => o.status === 'agendado'),
+      documents: db.prepare('SELECT * FROM documents WHERE user_id = ?').all(id),
       notifications: userNotifications,
       pdi: { title: 'Especialização em Inteligência Preditiva', progress: 68, deadline: 'Julho 2024' }
     });
   }
 
-  res.json({ notifications: userNotifications });
+  res.json({ role, notifications: userNotifications });
 });
 
 module.exports = router;

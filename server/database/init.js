@@ -112,7 +112,14 @@ db.exec(`
 
 // ─── SEED (only if users table is empty) ───────────────────────────────────────
 
-const count = db.prepare('SELECT COUNT(*) as n FROM users').get();
+// Always ensure admin master user exists (upsert on startup)
+db.prepare(`
+  INSERT INTO users (id, name, email, password, role, team, avatar, score, trend, status, created_at)
+  VALUES ('admin','Admin Master','admin@admin','admin123','admin','Sistema','AM',100,'+0.0','ativo','2024-01-01')
+  ON CONFLICT(email) DO UPDATE SET password='admin123', role='admin'
+`).run();
+
+const count = db.prepare('SELECT COUNT(*) as n FROM users WHERE id != ?').get('admin');
 if (count.n === 0) {
   const seed = db.transaction(() => {
     // Users

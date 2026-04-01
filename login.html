@@ -212,7 +212,7 @@
       if (result && result.token) {
         ACELERA_API.setToken(result.token);
         ACELERA_API.setUser(result.user);
-        const map = { coordenador: 'dashboard-coordenador.html', supervisor: 'dashboard-supervisor.html', analista: 'dashboard-analista.html' };
+      const map = { coordenador: 'dashboard-coordenador.html', supervisor: 'dashboard-supervisor.html', analista: 'dashboard-analista.html', admin: 'dashboard-coordenador.html' };
         window.location.href = map[result.user.role] || 'index.html';
       } else {
         document.getElementById('error-text').textContent = result?.error || 'Credenciais inválidas. Verifique e-mail e senha.';
@@ -231,7 +231,7 @@
   // If already logged in, redirect
   const session = ACELERA_API.getUser();
   if (session && ACELERA_API.getToken()) {
-    const map = { coordenador: 'dashboard-coordenador.html', supervisor: 'dashboard-supervisor.html', analista: 'dashboard-analista.html' };
+    const map = { coordenador: 'dashboard-coordenador.html', supervisor: 'dashboard-supervisor.html', analista: 'dashboard-analista.html', admin: 'dashboard-coordenador.html' };
     if (map[session.role]) window.location.href = map[session.role];
   }
 </script>
