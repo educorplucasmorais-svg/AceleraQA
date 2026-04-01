@@ -1,0 +1,338 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Eduardo Silveira",
+      "email": "eduardo@acelera.gov.br",
+      "password": "demo123",
+      "role": "coordenador",
+      "team": "Região Sul",
+      "avatar": "ES",
+      "createdAt": "2024-01-15"
+    },
+    {
+      "id": "2",
+      "name": "Carlos Moreira",
+      "email": "carlos@acelera.gov.br",
+      "password": "demo123",
+      "role": "supervisor",
+      "team": "Equipe Alpha",
+      "avatar": "CM",
+      "createdAt": "2024-01-20"
+    },
+    {
+      "id": "3",
+      "name": "Ana Lima",
+      "email": "ana@acelera.gov.br",
+      "password": "demo123",
+      "role": "analista",
+      "team": "Equipe Alpha",
+      "avatar": "AL",
+      "createdAt": "2024-02-01"
+    },
+    {
+      "id": "4",
+      "name": "Renata Mendes",
+      "email": "renata@acelera.gov.br",
+      "password": "demo123",
+      "role": "supervisor",
+      "team": "Equipe Beta",
+      "avatar": "RM",
+      "createdAt": "2024-01-10"
+    },
+    {
+      "id": "5",
+      "name": "Thiago Pereira",
+      "email": "thiago@acelera.gov.br",
+      "password": "demo123",
+      "role": "supervisor",
+      "team": "Equipe Gamma",
+      "avatar": "TP",
+      "createdAt": "2024-01-12"
+    }
+  ],
+  "feedbacks": [
+    {
+      "id": "f1",
+      "userId": "3",
+      "authorId": "2",
+      "type": "positivo",
+      "title": "Feedback Trimestral de Performance",
+      "content": "Excelente evolução na precisão das análises de conformidade. O tempo de resposta para casos de nível 3 reduziu em 15%. Focar agora na automação de relatórios recorrentes.",
+      "tags": [
+        "QUALIDADE",
+        "CELERIDADE"
+      ],
+      "date": "2024-04-12",
+      "createdAt": "2024-04-12"
+    },
+    {
+      "id": "f2",
+      "userId": "3",
+      "authorId": "2",
+      "type": "reconhecimento",
+      "title": "Reconhecimento Individual",
+      "content": "Destaque na resolução do incidente de conformidade #882. A postura proativa evitou um atraso crítico na entrega do quartil.",
+      "tags": [
+        "PROATIVIDADE"
+      ],
+      "date": "2024-03-28",
+      "createdAt": "2024-03-28"
+    },
+    {
+      "id": "f3",
+      "userId": "3",
+      "authorId": "2",
+      "type": "construtivo",
+      "title": "Ponto de Melhoria",
+      "content": "Atenção ao tempo de resposta nas manhãs de quarta-feira. As métricas de SLA apresentam queda consistente. Sugerimos revisão do fluxo de triagem matinal.",
+      "tags": [
+        "SLA",
+        "PROCESSO"
+      ],
+      "date": "2024-03-15",
+      "createdAt": "2024-03-15"
+    }
+  ],
+  "oneonones": [
+    {
+      "id": "o1",
+      "supervisorId": "2",
+      "analistaId": "3",
+      "title": "One-on-One Mensal",
+      "date": "2024-05-02",
+      "time": "14:30",
+      "status": "agendado",
+      "notes": "Revisar score ACELERA e progresso no PDI",
+      "createdAt": "2024-04-28"
+    },
+    {
+      "id": "o2",
+      "supervisorId": "4",
+      "analistaId": "3",
+      "title": "Alinhamento de SLA",
+      "date": "2024-04-15",
+      "time": "10:00",
+      "status": "concluido",
+      "notes": "Discutido plano de ação para redução de TMA.",
+      "createdAt": "2024-04-10"
+    }
+  ],
+  "documents": [
+    {
+      "id": "d1",
+      "title": "NDA Corporativo 2024",
+      "type": "NDA",
+      "status": "ativo",
+      "expiresAt": "2025-01-01",
+      "userId": "3",
+      "createdAt": "2024-01-01"
+    },
+    {
+      "id": "d2",
+      "title": "Contrato de Trabalho",
+      "type": "Contrato",
+      "status": "ativo",
+      "expiresAt": "2026-01-01",
+      "userId": "3",
+      "createdAt": "2024-01-15"
+    },
+    {
+      "id": "d3",
+      "title": "Política de Compliance Q1",
+      "type": "Compliance",
+      "status": "pendente",
+      "expiresAt": "2024-06-30",
+      "userId": "3",
+      "createdAt": "2024-04-01"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "n1",
+      "userId": "1",
+      "title": "Novo hotspot detectado",
+      "message": "Unidade Logística Sul-A atingiu 14 ocorrências nos últimos 7 dias.",
+      "type": "alerta",
+      "read": false,
+      "createdAt": "2024-04-01T10:00:00Z"
+    },
+    {
+      "id": "n2",
+      "userId": "1",
+      "title": "Relatório disponível",
+      "message": "O relatório de performance de Março/2024 está pronto.",
+      "type": "info",
+      "read": false,
+      "createdAt": "2024-04-01T09:00:00Z"
+    },
+    {
+      "id": "n3",
+      "userId": "1",
+      "title": "Supervisor Q1 atualizado",
+      "message": "Renata Mendes alcançou 98.2% de aceite este mês.",
+      "type": "sucesso",
+      "read": true,
+      "createdAt": "2024-03-31T15:00:00Z"
+    },
+    {
+      "id": "n4",
+      "userId": "2",
+      "title": "SLA crítico",
+      "message": "Analista Ana Lima possui 1 SLA expirado e 1 próximo do vencimento.",
+      "type": "alerta",
+      "read": false,
+      "createdAt": "2024-04-01T08:00:00Z"
+    },
+    {
+      "id": "n5",
+      "userId": "3",
+      "title": "Feedback recebido",
+      "message": "Você recebeu um novo feedback do seu supervisor.",
+      "type": "info",
+      "read": false,
+      "createdAt": "2024-04-01T07:00:00Z"
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "h1",
+      "rank": 1,
+      "unit": "Unidade Logística Sul-A",
+      "process": "Processo de Triagem",
+      "occurrences": 14,
+      "period": "Últimos 7 dias",
+      "status": "critico",
+      "agents": [
+        "JD",
+        "ML",
+        "+2"
+      ],
+      "description": "Alta taxa de reincidência no processo de triagem matinal. Falta de padronização no checklist de entrada.",
+      "actions": [
+        "Revisar SOP de triagem",
+        "Treinamento emergencial",
+        "Auditoria de processo"
+      ]
+    },
+    {
+      "id": "h2",
+      "rank": 2,
+      "unit": "Terminal Integrado Norte",
+      "process": "Segurança Perimetral",
+      "occurrences": 9,
+      "period": "Últimos 7 dias",
+      "status": "alerta",
+      "agents": [
+        "RB",
+        "PF"
+      ],
+      "description": "Falhas recorrentes no controle de acesso perimetral. Requer ação imediata.",
+      "actions": [
+        "Revisão de protocolo",
+        "Reforço de equipe",
+        "Instalação de câmeras adicionais"
+      ]
+    },
+    {
+      "id": "h3",
+      "rank": 3,
+      "unit": "Centro de Distribuição Leste",
+      "process": "Controle de Inventário",
+      "occurrences": 3,
+      "period": "Em mitigação",
+      "status": "mitigacao",
+      "agents": [
+        "AM"
+      ],
+      "description": "Inconsistências no inventário em processo de correção.",
+      "actions": [
+        "Recontar estoque",
+        "Ajustar sistema ERP"
+      ]
+    }
+  ],
+  "teams": [
+    {
+      "id": "t1",
+      "name": "Equipe Alpha",
+      "supervisorId": "2",
+      "members": [
+        "3"
+      ],
+      "region": "Sul"
+    },
+    {
+      "id": "t2",
+      "name": "Equipe Beta",
+      "supervisorId": "4",
+      "members": [],
+      "region": "Norte"
+    }
+  ],
+  "reports": [
+    {
+      "id": "rd748343b",
+      "title": "Relatório Executivo — Abril/2026",
+      "type": "executivo",
+      "generatedAt": "2026-04-01",
+      "generatedBy": "2",
+      "data": {
+        "performance": 94.2,
+        "trend": 2.4,
+        "supervisors": 3,
+        "analysts": 1
+      }
+    },
+    {
+      "id": "r14078990",
+      "title": "Relatório Executivo — Abril/2026",
+      "type": "executivo",
+      "generatedAt": "2026-04-01",
+      "generatedBy": "2",
+      "data": {
+        "performance": 94.2,
+        "trend": 2.4,
+        "supervisors": 3,
+        "analysts": 1
+      }
+    },
+    {
+      "id": "r1",
+      "title": "Relatório Executivo — Março/2024",
+      "type": "executivo",
+      "generatedAt": "2024-04-01",
+      "generatedBy": "1",
+      "data": {
+        "performance": 94.2,
+        "trend": 2.4,
+        "supervisors": 3,
+        "analysts": 1
+      }
+    },
+    {
+      "id": "r2",
+      "title": "Relatório de Conformidade — Março/2024",
+      "type": "conformidade",
+      "generatedAt": "2024-04-01",
+      "generatedBy": "1",
+      "data": {
+        "compliance": 88,
+        "pending": 2,
+        "approved": 14
+      }
+    },
+    {
+      "id": "r3",
+      "title": "Relatório de Engajamento — Março/2024",
+      "type": "engajamento",
+      "generatedAt": "2024-04-01",
+      "generatedBy": "1",
+      "data": {
+        "engagement": 82,
+        "feedbacks": 12,
+        "oneonones": 8
+      }
+    }
+  ]
+}

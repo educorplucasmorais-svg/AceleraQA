@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ACELERA — Coordenador</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/ui.js"></script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#004f96", "primary-container": "#0067c0",
+        "secondary": "#ab3600", "secondary-container": "#fd703c",
+        "tertiary": "#005b3b", "tertiary-container": "#00764e",
+        "surface": "#f9f9fc", "surface-container-low": "#f3f3f6",
+        "surface-container": "#eeeef0", "surface-container-high": "#e8e8ea",
+        "surface-container-highest": "#e2e2e5", "surface-container-lowest": "#ffffff",
+        "on-surface": "#1a1c1e", "on-surface-variant": "#414752",
+        "outline": "#717783", "outline-variant": "#c1c6d4",
+        "inverse-surface": "#2f3133", "surface-variant": "#e2e2e5",
+        "error": "#ba1a1a", "error-container": "#ffdad6",
+        "on-primary": "#ffffff", "on-secondary": "#ffffff", "on-tertiary": "#ffffff",
+        "inverse-primary": "#a6c8ff"
+      },
+      fontFamily: { "headline": ["Inter"], "body": ["Inter"], "label": ["Inter"] },
+      borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}
+    }
+  }
+}
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+.glass-panel { background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); }
+.milled-surface { background-color: #f3f3f6; }
+.jet-mono { font-family: 'JetBrains Mono', monospace; }
+.primary-gradient { background: linear-gradient(135deg, #004f96 0%, #0067c0 100%); }
+</style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="h-screen w-64 fixed left-0 top-0 bg-slate-50 border-r border-outline-variant flex flex-col py-6 z-40">
+  <div class="px-6 mb-8">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 primary-gradient rounded-lg flex items-center justify-center text-white font-bold text-sm">SO</div>
+      <div>
+        <div class="font-semibold text-[11px] uppercase tracking-widest text-blue-700">Sovereign Observer</div>
+        <div class="text-[9px] text-slate-400 uppercase tracking-widest">Intelligence Suite</div>
+      </div>
+    </div>
+  </div>
+  <nav id="sidebar-nav" class="flex-1 space-y-0.5 px-2">
+    <div class="nav-item cursor-pointer flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-wider transition-all rounded-lg mx-1 text-slate-500 hover:bg-slate-100" data-section="visao-geral" data-title="Visão Geral" onclick="setSection('visao-geral')">
+      <span class="material-symbols-outlined text-base">dashboard</span> Visão Geral
+    </div>
+    <div class="nav-item cursor-pointer flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-wider transition-all rounded-lg mx-1 text-slate-500 hover:bg-slate-100" data-section="intelligence" data-title="Intelligence Report" onclick="setSection('intelligence')">
+      <span class="material-symbols-outlined text-base">analytics</span> Intelligence Report
+    </div>
+    <div class="nav-item cursor-pointer flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-wider transition-all rounded-lg mx-1 text-slate-500 hover:bg-slate-100" data-section="hotspots" data-title="Hotspots" onclick="setSection('hotspots')">
+      <span class="material-symbols-outlined text-base">crisis_alert</span> Hotspots
+    </div>
+    <div class="nav-item cursor-pointer flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-wider transition-all rounded-lg mx-1 text-slate-500 hover:bg-slate-100" data-section="supervisores" data-title="Supervisores" onclick="setSection('supervisores')">
+      <span class="material-symbols-outlined text-base">group</span> Supervisores
+    </div>
+    <div class="nav-item cursor-pointer flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-wider transition-all rounded-lg mx-1 text-slate-500 hover:bg-slate-100" data-section="relatorios" data-title="Relatórios" onclick="setSection('relatorios')">
+      <span class="material-symbols-outlined text-base">description</span> Relatórios
+    </div>
+    <div class="nav-item cursor-pointer flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-wider transition-all rounded-lg mx-1 text-slate-500 hover:bg-slate-100" data-section="administracao" data-title="Administração" onclick="setSection('administracao')">
+      <span class="material-symbols-outlined text-base">admin_panel_settings</span> Administração
+    </div>
+    <div class="nav-item cursor-pointer flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-wider transition-all rounded-lg mx-1 text-slate-500 hover:bg-slate-100" data-section="configuracoes" data-title="Configurações" onclick="setSection('configuracoes')">
+      <span class="material-symbols-outlined text-base">settings</span> Configurações
+    </div>
+  </nav>
+  <div class="px-4 mt-auto pt-4 border-t border-outline-variant">
+    <div class="flex items-center gap-3">
+      <div id="user-avatar" class="w-8 h-8 primary-gradient rounded-full flex items-center justify-center text-white text-xs font-bold">ES</div>
+      <div>
+        <div id="user-name" class="text-sm font-semibold text-on-surface">Eduardo Silveira</div>
+        <div id="user-role-label" class="text-[10px] uppercase tracking-widest text-slate-400">COORDENADOR</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="ml-64 min-h-screen bg-surface">
+  <header class="sticky top-0 z-30 bg-white border-b border-outline-variant px-6 py-3 flex items-center justify-between">
+    <div>
+      <h1 id="page-title" class="text-lg font-bold text-on-surface">Visão Geral</h1>
+      <p id="page-subtitle" class="text-xs text-on-surface-variant">Plataforma ACELERA — Inteligência Comportamental</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="toggleNotifications()" class="relative p-2 rounded-full hover:bg-surface-container">
+        <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+        <span id="notif-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-secondary-container text-white text-[10px] rounded-full flex items-center justify-center hidden">0</span>
+      </button>
+      <button onclick="handleLogout()" class="flex items-center gap-2 px-3 py-1.5 text-[11px] uppercase tracking-wider text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+        <span class="material-symbols-outlined text-sm">logout</span> Sair
+      </button>
+    </div>
+  </header>
+
+  <div class="p-6 space-y-6">
+
+    <!-- VISÃO GERAL -->
+    <section id="section-visao-geral" class="content-section space-y-6">
+      <div class="grid grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5 border-l-4 border-l-blue-600">
+          <div class="text-xs text-on-surface-variant uppercase tracking-wider mb-1">Score Médio</div>
+          <div class="text-3xl font-bold text-on-surface jet-mono">87.4</div>
+          <div class="text-xs text-slate-400 mt-1">da organização</div>
+          <div class="text-xs text-green-600 font-semibold mt-2">▲ +1.2</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5 border-l-4 border-l-green-600">
+          <div class="text-xs text-on-surface-variant uppercase tracking-wider mb-1">Analistas Ativos</div>
+          <div class="text-3xl font-bold text-on-surface jet-mono">124</div>
+          <div class="text-xs text-slate-400 mt-1">usuários ativos</div>
+          <div class="text-xs text-green-600 font-semibold mt-2">▲ +3</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5 border-l-4 border-l-amber-500">
+          <div class="text-xs text-on-surface-variant uppercase tracking-wider mb-1">SLAs em Risco</div>
+          <div class="text-3xl font-bold text-on-surface jet-mono">7</div>
+          <div class="text-xs text-slate-400 mt-1">requerem atenção</div>
+          <div class="text-xs text-red-500 font-semibold mt-2">▼ -2</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5 border-l-4" style="border-left-color:#004f96">
+          <div class="text-xs text-on-surface-variant uppercase tracking-wider mb-1">Conformidade Global</div>
+          <div class="text-3xl font-bold text-on-surface jet-mono">94.2%</div>
+          <div class="text-xs text-slate-400 mt-1">aderência total</div>
+          <div class="text-xs text-green-600 font-semibold mt-2">▲ +0.8%</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-on-surface text-sm">Hotspots Críticos</h3>
+            <button onclick="setSection('hotspots')" class="text-xs text-primary hover:underline">Ver todos</button>
+          </div>
+          <div id="visao-hotspots" class="space-y-3"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-on-surface text-sm">Ranking de Supervisores</h3>
+            <button onclick="setSection('supervisores')" class="text-xs text-primary hover:underline">Ver todos</button>
+          </div>
+          <div id="visao-supervisores" class="space-y-2"></div>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <button onclick="gerarRelatorioExecutivo()" class="px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90 flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">description</span> Gerar Relatório Executivo
+        </button>
+      </div>
+    </section>
+
+    <!-- INTELLIGENCE -->
+    <section id="section-intelligence" class="content-section hidden space-y-6">
+      <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-on-surface">Relatórios de Intelligence</h3>
+          <div class="flex items-center gap-3">
+            <select class="text-sm border border-outline-variant rounded-lg px-3 py-1.5 text-on-surface">
+              <option>Março/2024</option>
+              <option>Abril/2024</option>
+              <option selected>Maio/2024</option>
+            </select>
+            <button class="px-3 py-1.5 bg-slate-100 text-slate-400 rounded-lg text-xs font-semibold uppercase tracking-wider cursor-not-allowed opacity-60" disabled>Baixar PDF</button>
+          </div>
+        </div>
+        <div class="milled-surface rounded-xl flex items-center justify-center" style="height:300px">
+          <div class="text-center">
+            <span class="material-symbols-outlined text-5xl text-slate-300 block mb-2">bar_chart</span>
+            <span class="text-sm text-slate-400">Gráfico de Desempenho Temporal</span>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+        <h3 class="font-semibold text-on-surface mb-4">Relatórios Gerados</h3>
+        <div id="intelligence-reports"></div>
+      </div>
+    </section>
+
+    <!-- HOTSPOTS -->
+    <section id="section-hotspots" class="content-section hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+        <div class="flex items-center gap-2 mb-6">
+          <button class="hotspot-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-blue-600 text-white" data-filter="todos" onclick="setHotspotFilter('todos')">Todos</button>
+          <button class="hotspot-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 hover:bg-slate-200" data-filter="critico" onclick="setHotspotFilter('critico')">Crítico</button>
+          <button class="hotspot-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 hover:bg-slate-200" data-filter="alerta" onclick="setHotspotFilter('alerta')">Alerta</button>
+          <button class="hotspot-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 hover:bg-slate-200" data-filter="mitigacao" onclick="setHotspotFilter('mitigacao')">Em Mitigação</button>
+        </div>
+        <div id="hotspots-grid" class="grid grid-cols-1 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- SUPERVISORES -->
+    <section id="section-supervisores" class="content-section hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-on-surface">Gestão de Supervisores</h3>
+          <button onclick="openNovoSupervisorModal()" class="px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90 flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">person_add</span> Novo Supervisor
+          </button>
+        </div>
+        <div id="supervisores-table"></div>
+      </div>
+    </section>
+
+    <!-- RELATÓRIOS -->
+    <section id="section-relatorios" class="content-section hidden space-y-6">
+      <div class="grid grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-blue-600">bar_chart</span>
+            </div>
+            <h4 class="font-semibold text-on-surface text-sm">Relatório Executivo</h4>
+          </div>
+          <p class="text-xs text-on-surface-variant mb-4">Resumo executivo de performance e indicadores chave da organização.</p>
+          <button onclick="gerarRelatorio('executivo')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Gerar Agora</button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-green-600">verified</span>
+            </div>
+            <h4 class="font-semibold text-on-surface text-sm">Relatório de Conformidade</h4>
+          </div>
+          <p class="text-xs text-on-surface-variant mb-4">Status de conformidade documental e aderência a processos regulatórios.</p>
+          <button onclick="gerarRelatorio('conformidade')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Gerar Agora</button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-purple-600">people</span>
+            </div>
+            <h4 class="font-semibold text-on-surface text-sm">Relatório de Engajamento</h4>
+          </div>
+          <p class="text-xs text-on-surface-variant mb-4">Índices de engajamento e participação das equipes nas atividades da plataforma.</p>
+          <button onclick="gerarRelatorio('engajamento')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Gerar Agora</button>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+        <h3 class="font-semibold text-on-surface mb-4">Relatórios Gerados</h3>
+        <div id="relatorios-table"></div>
+      </div>
+    </section>
+
+    <!-- ADMINISTRAÇÃO -->
+    <section id="section-administracao" class="content-section hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-on-surface">Gestão de Usuários</h3>
+          <button onclick="openNovoUsuarioModal()" class="px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90 flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">person_add</span> Adicionar Usuário
+          </button>
+        </div>
+        <div id="usuarios-table"></div>
+      </div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section id="section-configuracoes" class="content-section hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-5 max-w-2xl">
+        <h3 class="font-semibold text-on-surface mb-6">Configurações da Organização</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Nome da Organização</label>
+            <input type="text" value="Secretaria ACELERA" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail de Notificação</label>
+            <input type="email" placeholder="admin@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"/>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Período de Relatório</label>
+              <select class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface">
+                <option>Mensal</option>
+                <option>Trimestral</option>
+                <option>Semestral</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Fuso Horário</label>
+              <select class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface">
+                <option>America/Sao_Paulo</option>
+                <option>America/Manaus</option>
+                <option>America/Belem</option>
+                <option>America/Recife</option>
+              </select>
+            </div>
+          </div>
+          <div class="pt-2 space-y-4 border-t border-outline-variant">
+            <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider pt-2">Notificações e Automação</p>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-on-surface">Notificações por Email</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-on-surface">Alertas Automáticos</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-on-surface">Sincronização Diária</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+          </div>
+          <div class="pt-4">
+            <button onclick="salvarConfiguracoes()" class="px-6 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Salvar Configurações</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- NOTIFICATION PANEL -->
+<div id="notif-panel" class="hidden fixed right-0 top-0 h-full w-80 bg-white border-l border-outline-variant shadow-2xl z-50 flex flex-col">
+  <div class="flex items-center justify-between px-4 py-3 border-b border-outline-variant">
+    <span class="font-semibold text-sm">Notificações</span>
+    <div class="flex gap-2">
+      <button onclick="markAllRead()" class="text-xs text-primary hover:underline">Marcar todas lidas</button>
+      <button onclick="toggleNotifications()" class="text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+    </div>
+  </div>
+  <div id="notif-list" class="flex-1 overflow-y-auto divide-y divide-outline-variant"></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" class="hidden fixed inset-0 bg-black/40 z-[60] flex items-center justify-center" onclick="closeModal()">
+  <div id="modal-box" class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="modal-title" class="text-lg font-bold text-on-surface">Modal</h3>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const MOCK_HOTSPOTS = [
+  { id:'h1', unit:'DIRED', process:'Gestão de SLA', occurrences:14, severity:'critico', description:'Alta taxa de descumprimento de prazos', status:'ativo' },
+  { id:'h2', unit:'SUPREC', process:'Conformidade Documental', occurrences:9, severity:'alerta', description:'Documentos vencidos não renovados', status:'ativo' },
+  { id:'h3', unit:'GEFIN', process:'RVV Trimestral', occurrences:6, severity:'mitigacao', description:'Processo de avaliação em revisão', status:'mitigando' }
+];
+const MOCK_SUPERVISORS = [
+  { id:'s1', name:'Carlos Moreira', email:'carlos@acelera.gov.br', team:'Equipe Alpha', score:84.2, trend:'+1.2', status:'ativo' },
+  { id:'s2', name:'Fernanda Costa', email:'fernanda@acelera.gov.br', team:'Equipe Beta', score:79.8, trend:'-0.5', status:'ativo' },
+  { id:'s3', name:'Roberto Alves', email:'roberto@acelera.gov.br', team:'Equipe Gama', score:91.1, trend:'+3.4', status:'ativo' }
+];
+const MOCK_REPORTS = [
+  { id:'r1', title:'Relatório Executivo Abril', type:'executivo', createdAt:'2024-04-30' },
+  { id:'r2', title:'Conformidade Q1/2024', type:'conformidade', createdAt:'2024-03-31' },
+  { id:'r3', title:'Engajamento Equipes', type:'engajamento', createdAt:'2024-04-15' }
+];
+const MOCK_USERS = [
+  { id:'u1', name:'Eduardo Silveira', email:'eduardo@acelera.gov.br', role:'coordenador', team:'Direção', status:'ativo' },
+  { id:'u2', name:'Carlos Moreira', email:'carlos@acelera.gov.br', role:'supervisor', team:'Equipe Alpha', status:'ativo' },
+  { id:'u3', name:'Fernanda Costa', email:'fernanda@acelera.gov.br', role:'supervisor', team:'Equipe Beta', status:'ativo' },
+  { id:'u4', name:'Ana Lima', email:'ana@acelera.gov.br', role:'analista', team:'Equipe Alpha', status:'ativo' },
+  { id:'u5', name:'João Santos', email:'joao@acelera.gov.br', role:'analista', team:'Equipe Alpha', status:'ativo' },
+  { id:'u6', name:'Maria Oliveira', email:'maria@acelera.gov.br', role:'analista', team:'Equipe Beta', status:'inativo' }
+];
+
+let hotspotFilter = 'todos';
+let currentHotspots = [];
+
+function setSection(id) {
+  document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+  document.getElementById('section-' + id)?.classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.remove('bg-blue-50','text-blue-700','border-r-4','border-blue-700','font-semibold');
+    n.classList.add('text-slate-500');
+  });
+  const activeNav = document.querySelector('[data-section="' + id + '"]');
+  if (activeNav) {
+    activeNav.classList.add('bg-blue-50','text-blue-700','border-r-4','border-blue-700','font-semibold');
+    activeNav.classList.remove('text-slate-500');
+  }
+  const title = activeNav?.dataset.title || id;
+  document.getElementById('page-title').textContent = title;
+  loadSectionData(id);
+}
+
+async function loadNotifications() {
+  try {
+    const data = await ACELERA_API.getNotifications();
+    const notifs = data?.notifications || [];
+    const unread = notifs.filter(n => !n.read).length;
+    const badge = document.getElementById('notif-badge');
+    if (unread > 0) { badge.textContent = unread; badge.classList.remove('hidden'); }
+    else badge.classList.add('hidden');
+    const list = document.getElementById('notif-list');
+    list.innerHTML = notifs.length ? notifs.map(n => `
+      <div class="px-4 py-3 ${n.read ? 'opacity-60' : 'bg-blue-50/30'} cursor-pointer hover:bg-slate-50" onclick="markRead('${n.id}')">
+        <div class="text-sm font-medium text-on-surface">${n.title}</div>
+        <div class="text-xs text-on-surface-variant mt-0.5">${n.message}</div>
+        <div class="text-[10px] text-slate-400 mt-1">${n.createdAt || ''}</div>
+      </div>
+    `).join('') : '<div class="px-4 py-8 text-center text-sm text-slate-400">Nenhuma notificação</div>';
+  } catch(e) { console.warn('Notifs:', e); }
+}
+
+async function markRead(id) { try { await ACELERA_API.markNotificationRead(id); await loadNotifications(); } catch(e){} }
+async function markAllRead() { try { await ACELERA_API.markAllNotificationsRead(); await loadNotifications(); } catch(e){} }
+function toggleNotifications() { document.getElementById('notif-panel').classList.toggle('hidden'); }
+async function handleLogout() { try { await ACELERA_API.logout(); } catch(e){} ACELERA_API.clearToken?.(); window.location.href = '/login.html'; }
+
+function showToast(msg, type = 'success') {
+  const colors = { success: 'bg-green-700 text-white', error: 'bg-red-700 text-white', info: 'bg-blue-700 text-white', warning: 'bg-amber-600 text-white' };
+  const t = document.createElement('div');
+  t.className = `fixed bottom-6 right-6 z-[100] px-5 py-3 rounded-xl text-sm font-medium shadow-xl ${colors[type]||colors.success} transition-all`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 3000);
+}
+
+function openModal(title, bodyHtml) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHtml;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+
+function loadSectionData(id) {
+  if (id === 'visao-geral') loadVisaoGeral();
+  else if (id === 'intelligence') loadIntelligence();
+  else if (id === 'hotspots') loadHotspots();
+  else if (id === 'supervisores') loadSupervisores();
+  else if (id === 'relatorios') loadRelatorios();
+  else if (id === 'administracao') loadAdministracao();
+}
+
+function severityBadge(s) {
+  if (s === 'critico') return '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">Crítico</span>';
+  if (s === 'alerta') return '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Alerta</span>';
+  return '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Mitigação</span>';
+}
+
+async function loadVisaoGeral() {
+  const hotEl = document.getElementById('visao-hotspots');
+  if (hotEl) {
+    hotEl.innerHTML = MOCK_HOTSPOTS.slice(0,3).map(h => `
+      <div class="flex items-start gap-3 p-3 rounded-lg bg-surface-container-low">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${h.severity==='critico'?'bg-red-500':h.severity==='alerta'?'bg-amber-500':'bg-green-500'}">${h.unit.slice(0,2)}</div>
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-xs text-on-surface">${h.unit} — ${h.process}</div>
+          <div class="text-xs text-on-surface-variant mt-0.5">${h.description}</div>
+        </div>
+        ${severityBadge(h.severity)}
+      </div>
+    `).join('');
+  }
+  const supEl = document.getElementById('visao-supervisores');
+  if (supEl) {
+    supEl.innerHTML = MOCK_SUPERVISORS.map((s,i) => `
+      <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-low">
+        <div class="w-7 h-7 flex items-center justify-center rounded-full text-[10px] font-bold text-white ${s.score>=90?'bg-green-500':s.score>=80?'bg-blue-500':'bg-amber-500'}">${i+1}</div>
+        <div class="flex-1">
+          <div class="text-xs font-semibold text-on-surface">${s.name}</div>
+          <div class="text-[10px] text-slate-400">${s.team}</div>
+        </div>
+        <div class="text-right">
+          <div class="text-xs font-bold jet-mono ${s.score>=90?'text-green-600':s.score>=80?'text-blue-600':'text-amber-600'}">${s.score}</div>
+          <div class="text-[10px] ${s.trend.startsWith('+')?'text-green-500':'text-red-500'}">${s.trend}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+async function gerarRelatorioExecutivo() {
+  try { await ACELERA_API.generateReport('executivo'); } catch(e) {}
+  showToast('Relatório gerado com sucesso!', 'success');
+}
+
+async function gerarRelatorio(type) {
+  try { await ACELERA_API.generateReport(type); } catch(e) {}
+  showToast('Relatório gerado com sucesso!', 'success');
+}
+
+async function loadIntelligence() {
+  let reports = MOCK_REPORTS;
+  try {
+    const data = await ACELERA_API.getReports();
+    if (data?.reports?.length) reports = data.reports;
+  } catch(e) {}
+  const el = document.getElementById('intelligence-reports');
+  if (el) el.innerHTML = renderReportsTable(reports);
+}
+
+function renderReportsTable(reports) {
+  const typeBadge = (t) => {
+    const map = { executivo:'bg-blue-100 text-blue-700', conformidade:'bg-green-100 text-green-700', engajamento:'bg-purple-100 text-purple-700' };
+    return `<span class="px-2 py-0.5 rounded-full text-xs font-semibold ${map[t]||'bg-slate-100 text-slate-600'}">${t}</span>`;
+  };
+  return `<table class="w-full text-sm">
+    <thead class="bg-surface-container-low"><tr>
+      <th class="text-left px-4 py-2 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Título</th>
+      <th class="text-left px-4 py-2 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Tipo</th>
+      <th class="text-left px-4 py-2 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Data</th>
+      <th class="text-left px-4 py-2 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Ação</th>
+    </tr></thead>
+    <tbody class="divide-y divide-outline-variant">
+      ${reports.map(r => `<tr class="hover:bg-surface-container-low">
+        <td class="px-4 py-3 font-medium text-on-surface">${r.title}</td>
+        <td class="px-4 py-3">${typeBadge(r.type)}</td>
+        <td class="px-4 py-3 text-on-surface-variant">${r.createdAt}</td>
+        <td class="px-4 py-3"><button class="text-xs text-blue-600 hover:underline" onclick="showToast('Abrindo relatório', 'info')">Visualizar</button></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+function setHotspotFilter(filter) {
+  hotspotFilter = filter;
+  document.querySelectorAll('.hotspot-filter-btn').forEach(btn => {
+    if (btn.dataset.filter === filter) {
+      btn.className = 'hotspot-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-blue-600 text-white';
+    } else {
+      btn.className = 'hotspot-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 hover:bg-slate-200';
+    }
+  });
+  renderHotspotCards(currentHotspots);
+}
+
+async function loadHotspots() {
+  let hotspots = MOCK_HOTSPOTS;
+  try {
+    const data = await ACELERA_API.getHotspots();
+    if (data?.hotspots?.length) hotspots = data.hotspots;
+  } catch(e) {}
+  currentHotspots = hotspots;
+  renderHotspotCards(hotspots);
+}
+
+function renderHotspotCards(hotspots) {
+  const filtered = hotspotFilter === 'todos' ? hotspots : hotspots.filter(h => h.severity === hotspotFilter);
+  const grid = document.getElementById('hotspots-grid');
+  if (!grid) return;
+  if (!filtered.length) { grid.innerHTML = '<div class="text-center py-8 text-sm text-slate-400">Nenhum hotspot encontrado para este filtro.</div>'; return; }
+  grid.innerHTML = filtered.map((h, i) => `
+    <div class="border border-outline-variant rounded-xl p-5 bg-white">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 flex-shrink-0 rounded-full flex items-center justify-center font-bold text-white text-sm ${h.severity==='critico'?'bg-red-500':h.severity==='alerta'?'bg-amber-500':'bg-green-500'}">${i+1}</div>
+        <div class="flex-1">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-bold text-on-surface">${h.unit}</h4>
+            ${severityBadge(h.severity)}
+          </div>
+          <div class="text-sm text-on-surface-variant mb-1">${h.process}</div>
+          <div class="text-xs text-slate-400 mb-3">${h.description}</div>
+          <div class="flex items-center gap-2 mb-4">
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">${h.occurrences} ocorrências</span>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="iniciarIntervencao('${h.unit}')" class="px-3 py-1.5 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Iniciar Intervenção</button>
+            <button onclick="marcarResolvido('${h.id}')" class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-semibold uppercase tracking-wider hover:bg-slate-200">Marcar Resolvido</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function iniciarIntervencao(unit) {
+  try { await ACELERA_API.createFeedback({ title: 'Intervenção ' + unit, type: 'construtivo', content: 'Intervenção iniciada' }); } catch(e) {}
+  showToast('Intervenção iniciada para ' + unit, 'success');
+}
+
+function marcarResolvido(id) { showToast('Hotspot marcado como resolvido', 'success'); }
+
+async function loadSupervisores() {
+  let supervisors = MOCK_SUPERVISORS;
+  try {
+    const data = await ACELERA_API.getUsers();
+    const s = (data?.users || []).filter(u => u.role === 'supervisor');
+    if (s.length) supervisors = s;
+  } catch(e) {}
+  const el = document.getElementById('supervisores-table');
+  if (!el) return;
+  el.innerHTML = `<table class="w-full text-sm">
+    <thead class="bg-surface-container-low"><tr>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Supervisor</th>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Equipe</th>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Score</th>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Tendência</th>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Status</th>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Ação</th>
+    </tr></thead>
+    <tbody class="divide-y divide-outline-variant">
+      ${supervisors.map(s => `<tr class="hover:bg-surface-container-low">
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 primary-gradient rounded-full flex items-center justify-center text-white text-xs font-bold">${(s.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+            <div>
+              <div class="font-semibold text-on-surface">${s.name}</div>
+              <div class="text-xs text-slate-400">${s.email||''}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-4 py-3 text-on-surface-variant text-sm">${s.team}</td>
+        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold jet-mono ${(s.score||0)>=90?'bg-green-100 text-green-700':(s.score||0)>=80?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'}">${s.score}</span></td>
+        <td class="px-4 py-3 text-xs font-semibold ${(s.trend||'').startsWith('+')?'text-green-600':'text-red-500'}">${s.trend||'—'}</td>
+        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${s.status==='ativo'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${s.status}</span></td>
+        <td class="px-4 py-3 space-x-2">
+          <button onclick="showToast('Detalhes de ${s.name}', 'info')" class="text-xs text-blue-600 hover:underline">Ver Detalhes</button>
+          <button onclick="openFeedbackSupervisorModal('${s.name}')" class="text-xs text-slate-500 hover:underline">Feedback</button>
+          <button onclick="openOneononeModal('${s.name}')" class="text-xs text-slate-500 hover:underline">1:1</button>
+        </td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+function openFeedbackSupervisorModal(name) {
+  openModal('Feedback para ' + name, `
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Tipo</label>
+        <select class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"><option>positivo</option><option>construtivo</option><option>reconhecimento</option></select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Título</label>
+        <input type="text" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Conteúdo</label>
+        <textarea rows="3" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"></textarea>
+      </div>
+      <button onclick="closeModal();showToast('Feedback enviado com sucesso!','success')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Enviar Feedback</button>
+    </div>
+  `);
+}
+
+function openOneononeModal(name) {
+  openModal('Agendar 1:1 com ' + name, `
+    <div class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Data</label>
+          <input type="date" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Hora</label>
+          <input type="time" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Notas</label>
+        <textarea rows="2" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"></textarea>
+      </div>
+      <button onclick="closeModal();showToast('1:1 agendado com sucesso!','success')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Agendar</button>
+    </div>
+  `);
+}
+
+function openNovoSupervisorModal() {
+  openModal('Novo Supervisor', `
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Nome</label>
+        <input type="text" placeholder="Nome completo" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail</label>
+        <input type="email" placeholder="email@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Equipe</label>
+        <input type="text" placeholder="Nome da equipe" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <button onclick="closeModal();showToast('Funcionalidade em desenvolvimento','info')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Salvar</button>
+    </div>
+  `);
+}
+
+async function loadRelatorios() {
+  let reports = MOCK_REPORTS;
+  try {
+    const data = await ACELERA_API.getReports();
+    if (data?.reports?.length) reports = data.reports;
+  } catch(e) {}
+  const el = document.getElementById('relatorios-table');
+  if (el) el.innerHTML = renderReportsTable(reports);
+}
+
+async function loadAdministracao() {
+  let users = MOCK_USERS;
+  try {
+    const data = await ACELERA_API.getUsers();
+    if (data?.users?.length) users = data.users;
+  } catch(e) {}
+  const roleBadge = (r) => {
+    const map = { coordenador:'bg-blue-100 text-blue-700', supervisor:'bg-orange-100 text-orange-700', analista:'bg-green-100 text-green-700' };
+    return `<span class="px-2 py-0.5 rounded-full text-xs font-semibold ${map[r]||'bg-slate-100 text-slate-600'}">${r}</span>`;
+  };
+  const el = document.getElementById('usuarios-table');
+  if (!el) return;
+  el.innerHTML = `<table class="w-full text-sm">
+    <thead class="bg-surface-container-low"><tr>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Usuário</th>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Papel</th>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Equipe</th>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Status</th>
+      <th class="text-left px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Ações</th>
+    </tr></thead>
+    <tbody class="divide-y divide-outline-variant">
+      ${users.map(u => `<tr class="hover:bg-surface-container-low">
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 primary-gradient rounded-full flex items-center justify-center text-white text-xs font-bold">${(u.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+            <div>
+              <div class="font-semibold text-on-surface">${u.name}</div>
+              <div class="text-xs text-slate-400">${u.email}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-4 py-3">${roleBadge(u.role)}</td>
+        <td class="px-4 py-3 text-on-surface-variant text-sm">${u.team}</td>
+        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${u.status==='ativo'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${u.status}</span></td>
+        <td class="px-4 py-3">
+          <button onclick="showToast('Editando ${u.name}','info')" class="text-xs text-blue-600 hover:underline mr-2">Editar</button>
+          <button onclick="showToast('Usuário removido','warning')" class="text-xs text-red-500 hover:underline">Excluir</button>
+        </td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+function openNovoUsuarioModal() {
+  openModal('Adicionar Usuário', `
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Nome</label>
+        <input type="text" placeholder="Nome completo" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">E-mail</label>
+        <input type="email" placeholder="email@acelera.gov.br" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Papel</label>
+        <select class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
+          <option>coordenador</option><option>supervisor</option><option>analista</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">Equipe</label>
+        <input type="text" placeholder="Nome da equipe" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm"/>
+      </div>
+      <button onclick="closeModal();showToast('Usuário adicionado com sucesso!','success')" class="w-full px-4 py-2 primary-gradient text-white rounded-lg text-xs font-semibold uppercase tracking-wider hover:opacity-90">Salvar</button>
+    </div>
+  `);
+}
+
+function salvarConfiguracoes() { showToast('Configurações salvas com sucesso!', 'success'); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const user = (typeof ACELERA_API !== 'undefined' && ACELERA_API.getUser) ? ACELERA_API.getUser() : null;
+  if (typeof ACELERA_API !== 'undefined' && !ACELERA_API.getToken()) { window.location.href = '/login.html'; return; }
+  if (user) {
+    document.getElementById('user-name').textContent = user.name || 'Eduardo Silveira';
+    document.getElementById('user-avatar').textContent = (user.name||'ES').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  }
+  setSection('visao-geral');
+  loadNotifications();
+});
+</script>
+</body>
+</html>
