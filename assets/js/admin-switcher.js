@@ -7,11 +7,14 @@
 
     const current = window.location.pathname.split('/').pop() || 'dashboard-coordenador.html';
 
+    // Sync admin view with current page on load
     const views = [
       { id: 'coordenador', label: 'Coordenador', icon: 'supervisor_account', url: 'dashboard-coordenador.html', color: '#004f96' },
       { id: 'supervisor',  label: 'Supervisor',  icon: 'manage_accounts',    url: 'dashboard-supervisor.html', color: '#ab3600' },
       { id: 'analista',    label: 'Operador',     icon: 'analytics',          url: 'dashboard-analista.html',   color: '#005b3b' },
     ];
+    const activeView = views.find(v => current.includes(v.id));
+    if (activeView) localStorage.setItem('acelera_admin_view', activeView.id);
 
     const bar = document.createElement('div');
     bar.id = 'admin-switcher';
@@ -37,7 +40,7 @@
       <div style="display:flex;align-items:center;gap:4px">
         <span style="font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.1em;margin-right:6px">Visão:</span>
         ${views.map(v => `
-          <button onclick="adminSwitchView('${v.url}')"
+          <button onclick="adminSwitchView('${v.url}','${v.id}')"
             id="asw-${v.id}"
             style="
               display:flex;align-items:center;gap:5px;
@@ -75,7 +78,8 @@
     document.head.appendChild(style);
   }
 
-  window.adminSwitchView = function(url) {
+  window.adminSwitchView = function(url, viewId) {
+    localStorage.setItem('acelera_admin_view', viewId);
     window.location.href = url;
   };
 

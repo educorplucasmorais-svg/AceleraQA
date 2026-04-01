@@ -9,11 +9,15 @@ const ACELERA_API = {
 
   async request(path, options = {}) {
     const token = this.getToken();
+    const user = this.getUser();
+    // Admin impersonation: send current view via header so backend returns correct role data
+    const adminView = (user && user.role === 'admin') ? localStorage.getItem('acelera_admin_view') || 'coordenador' : null;
     const res = await fetch(API_BASE + path, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(adminView ? { 'X-Admin-View': adminView } : {}),
         ...options.headers,
       },
       body: options.body ? JSON.stringify(options.body) : undefined,

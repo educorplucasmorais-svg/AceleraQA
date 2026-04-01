@@ -8,7 +8,9 @@ router.get('/', (req, res) => {
   const userNotifications = db.prepare('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC').all(id)
     .map(n => ({ ...n, read: n.read === 1 }));
 
-  const effectiveRole = (role === 'admin') ? 'coordenador' : role;
+  // Admin impersonation: use X-Admin-View header if present
+  const adminView = req.headers['x-admin-view'];
+  const effectiveRole = (role === 'admin' && adminView) ? adminView : (role === 'admin') ? 'coordenador' : role;
 
   if (effectiveRole === 'coordenador') {
     const supervisors = db.prepare("SELECT * FROM users WHERE role = 'supervisor'").all();

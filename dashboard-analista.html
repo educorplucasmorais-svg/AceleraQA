@@ -935,7 +935,7 @@ document.addEventListener('click', (e) => {
 window.addEventListener('DOMContentLoaded', async () => {
   const user = ACELERA_API.getUser();
   if (!user) { window.location.href = '/login.html'; return; }
-  if (user.role !== 'analista') { window.location.href = '/login.html'; return; }
+  if (user.role !== 'analista' && user.role !== 'admin') { window.location.href = '/login.html'; return; }
 
   document.getElementById('user-name').textContent = user.name;
   document.getElementById('welcome-name').textContent = user.name;
