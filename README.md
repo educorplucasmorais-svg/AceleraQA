@@ -98,6 +98,18 @@ Acesse: **http://localhost:3000**
 
 ---
 
+## 🌐 Deploy em Produção
+
+| Ambiente | URL |
+|----------|-----|
+| **Vercel (Produção)** | **https://acelera-qa.vercel.app** |
+| **Repositório GitHub** | https://github.com/educorplucasmorais-svg/AceleraQA |
+| **Painel Vercel** | https://vercel.com/lucas-projects-15fd675a/acelera-qa |
+
+> Auto-deploy ativo: todo `git push origin main` dispara novo deploy no Vercel.
+
+---
+
 ## 🔑 Credenciais Demo
 
 | E-mail | Senha | Perfil |
