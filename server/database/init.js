@@ -1,11 +1,17 @@
+'use strict';
+// Auto-fallback: use native SQLite on local dev; pure-JS in-memory store on Vercel/serverless
+try { require('better-sqlite3'); } catch (_) {
+  console.warn('⚠️  better-sqlite3 not available — using in-memory store');
+  module.exports = require('./store');
+  return; // valid in CommonJS (module wrapper is a function)
+}
+
 const Database = require('better-sqlite3');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const DB_FILE = path.join(__dirname, 'acelera.db');
 const db = new Database(DB_FILE);
-
-// Enable WAL mode for concurrent access + better performance
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
