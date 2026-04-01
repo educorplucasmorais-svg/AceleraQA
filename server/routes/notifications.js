@@ -1,30 +1,21 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+const db = require('../database/init');
 const router = express.Router();
-const DB_PATH = path.join(__dirname, '../data/db.json');
-
-function readDB() { return JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); }
-function writeDB(db) { fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2)); }
 
 router.get('/', (req, res) => {
-  const db = readDB();
-  res.json(db.notifications.filter(n => n.userId === req.user.id));
+  const notifs = db.prepare('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC').all(req.user.id);
+  res.json({ notifications: notifs.map(n => ({ ...n, userId: n.user_id, read: n.read === 1 })) });
 });
 
 router.put('/:id/read', (req, res) => {
-  const db = readDB();
-  const n = db.notifications.find(n => n.id === req.params.id && n.userId === req.user.id);
-  if (!n) return res.status(404).json({ error: 'Notificação não encontrada' });
-  n.read = true;
-  writeDB(db);
-  res.json(n);
+  const n = db.prepare('SELECT * FROM notifications WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
+  if (!n) return res.status(404).json({ error: 'Notificacao nao encontrada' });
+  db.prepare('UPDATE notifications SET read = 1 WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
 });
 
 router.put('/read-all', (req, res) => {
-  const db = readDB();
-  db.notifications.filter(n => n.userId === req.user.id).forEach(n => n.read = true);
-  writeDB(db);
+  db.prepare('UPDATE notifications SET read = 1 WHERE user_id = ?').run(req.user.id);
   res.json({ ok: true });
 });
 

@@ -1,45 +1,42 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const db = require('../database/init');
 const router = express.Router();
-const DB_PATH = path.join(__dirname, '../data/db.json');
 
-function readDB() { return JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); }
-function writeDB(db) { fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2)); }
+function fmtOO(o) {
+  return { ...o, supervisorId: o.supervisor_id, analistaId: o.analista_id, createdAt: o.created_at };
+}
 
 router.get('/', (req, res) => {
-  const db = readDB();
   const { id, role } = req.user;
-  let list = db.oneonones;
-  if (role === 'supervisor') list = list.filter(o => o.supervisorId === id);
-  else if (role === 'analista') list = list.filter(o => o.analistaId === id);
-  res.json(list);
+  let rows;
+  if (role === 'supervisor') rows = db.prepare('SELECT * FROM oneonones WHERE supervisor_id = ? ORDER BY date DESC').all(id);
+  else if (role === 'analista') rows = db.prepare('SELECT * FROM oneonones WHERE analista_id = ? ORDER BY date DESC').all(id);
+  else rows = db.prepare('SELECT * FROM oneonones ORDER BY date DESC').all();
+  res.json(rows.map(fmtOO));
 });
 
 router.post('/', (req, res) => {
-  const db = readDB();
-  const o = { id: 'o' + uuidv4().slice(0, 8), status: 'agendado', ...req.body, createdAt: new Date().toISOString().slice(0,10) };
-  db.oneonones.push(o);
-  writeDB(db);
-  res.status(201).json(o);
+  const { supervisorId, analistaId, title, date, time, notes } = req.body;
+  if (!date) return res.status(400).json({ error: 'Data é obrigatória' });
+  const id = 'o' + uuidv4().slice(0, 8);
+  db.prepare('INSERT INTO oneonones (id, supervisor_id, analista_id, title, date, time, status, notes, created_at) VALUES (?,?,?,?,?,?,?,?,?)')
+    .run(id, supervisorId || req.user.id, analistaId || req.user.id, title || '1:1', date, time || '10:00', 'agendado', notes || '', new Date().toISOString().slice(0,10));
+  res.status(201).json(fmtOO(db.prepare('SELECT * FROM oneonones WHERE id=?').get(id)));
 });
 
 router.put('/:id', (req, res) => {
-  const db = readDB();
-  const idx = db.oneonones.findIndex(o => o.id === req.params.id);
-  if (idx === -1) return res.status(404).json({ error: 'One-on-One não encontrado' });
-  db.oneonones[idx] = { ...db.oneonones[idx], ...req.body };
-  writeDB(db);
-  res.json(db.oneonones[idx]);
+  const oo = db.prepare('SELECT * FROM oneonones WHERE id = ?').get(req.params.id);
+  if (!oo) return res.status(404).json({ error: 'One-on-One não encontrado' });
+  const { status, title, date, time, notes } = req.body;
+  db.prepare('UPDATE oneonones SET status=COALESCE(?,status), title=COALESCE(?,title), date=COALESCE(?,date), time=COALESCE(?,time), notes=COALESCE(?,notes) WHERE id=?')
+    .run(status||null, title||null, date||null, time||null, notes !== undefined ? notes : null, req.params.id);
+  res.json(fmtOO(db.prepare('SELECT * FROM oneonones WHERE id=?').get(req.params.id)));
 });
 
 router.delete('/:id', (req, res) => {
-  const db = readDB();
-  const idx = db.oneonones.findIndex(o => o.id === req.params.id);
-  if (idx === -1) return res.status(404).json({ error: 'One-on-One não encontrado' });
-  db.oneonones.splice(idx, 1);
-  writeDB(db);
+  const info = db.prepare('DELETE FROM oneonones WHERE id = ?').run(req.params.id);
+  if (info.changes === 0) return res.status(404).json({ error: 'One-on-One não encontrado' });
   res.json({ ok: true });
 });
 

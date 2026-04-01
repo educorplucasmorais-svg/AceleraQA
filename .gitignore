@@ -5,3 +5,7 @@ node_modules/
 dist/
 .vercel/
 .vercel
+# SQLite database file (local only — not committed)
+server/database/acelera.db
+server/database/acelera.db-shm
+server/database/acelera.db-wal

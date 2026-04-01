@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
+// Initialize SQLite database (creates tables + seeds if needed)
+require('./database/init');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -28,6 +31,7 @@ if (require.main === module) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`\n  🚀 ACELERA Backend rodando em http://localhost:${PORT}`);
-    console.log(`  ➜  Login: http://localhost:${PORT}/login.html\n`);
+    console.log(`  ➜  Login: http://localhost:${PORT}/login.html`);
+    console.log(`  ➜  DB:    SQLite (server/database/acelera.db)\n`);
   });
 }

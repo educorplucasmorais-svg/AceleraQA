@@ -1,22 +1,21 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+const db = require('../database/init');
 const router = express.Router();
 
-function readDB() {
-  return JSON.parse(fs.readFileSync(path.join(__dirname, '../data/db.json'), 'utf8'));
+function fmtHS(h) {
+  try { return { ...h, agents: JSON.parse(h.agents || '[]'), actions: JSON.parse(h.actions || '[]') }; }
+  catch { return h; }
 }
 
 router.get('/', (req, res) => {
-  const db = readDB();
-  res.json(db.hotspots);
+  const rows = db.prepare('SELECT * FROM hotspots ORDER BY rank ASC').all();
+  res.json(rows.map(fmtHS));
 });
 
 router.get('/:id', (req, res) => {
-  const db = readDB();
-  const h = db.hotspots.find(h => h.id === req.params.id);
-  if (!h) return res.status(404).json({ error: 'Hotspot não encontrado' });
-  res.json(h);
+  const h = db.prepare('SELECT * FROM hotspots WHERE id = ?').get(req.params.id);
+  if (!h) return res.status(404).json({ error: 'Hotspot nao encontrado' });
+  res.json(fmtHS(h));
 });
 
 module.exports = router;
