@@ -10,7 +10,7 @@
     const views = [
       { id: 'coordenador', label: 'Coordenador', icon: 'supervisor_account', url: 'dashboard-coordenador.html', color: '#004f96' },
       { id: 'supervisor',  label: 'Supervisor',  icon: 'manage_accounts',    url: 'dashboard-supervisor.html', color: '#ab3600' },
-      { id: 'analista',    label: 'Analista',    icon: 'analytics',          url: 'dashboard-analista.html',   color: '#005b3b' },
+      { id: 'analista',    label: 'Operador',     icon: 'analytics',          url: 'dashboard-analista.html',   color: '#005b3b' },
     ];
 
     const bar = document.createElement('div');

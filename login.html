@@ -69,22 +69,41 @@
             <p class="text-xs font-semibold">Sincronização de Dados 1:1</p>
           </div>
         </div>
-        <!-- Demo credentials hint -->
-        <div class="mt-8 p-4 bg-white/10 border border-white/20 rounded-lg" id="demo-hint-box">
-          <p class="font-mono text-[10px] uppercase tracking-widest mb-3 opacity-70">Demo — Credenciais</p>
-          <div id="demo-hint-coordenador">
-            <p class="text-xs font-semibold opacity-90">eduardo@acelera.gov.br</p>
-            <p class="text-xs opacity-60 font-mono">Coordenador Regional</p>
+        <!-- Quick Access - Fase de Teste -->
+        <div class="mt-6 pt-5 border-t border-white/10">
+          <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-white/30 mb-3">Acesso Rápido — Fase de Teste</p>
+          <div class="space-y-2">
+            <button onclick="quickLogin('coordenador')" class="w-full flex items-center gap-3 px-4 py-2.5 bg-white/5 hover:bg-blue-500/15 border border-white/10 hover:border-blue-400/30 rounded-lg transition-all text-left group">
+              <div class="w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-blue-300 text-sm">supervisor_account</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-[11px] font-bold text-white/80 uppercase tracking-wider">Coordenador</div>
+                <div class="text-[9px] text-white/35 font-mono">eduardo@acelera.gov.br</div>
+              </div>
+              <span class="material-symbols-outlined text-white/20 group-hover:text-blue-300/70 text-sm transition-colors">arrow_forward</span>
+            </button>
+            <button onclick="quickLogin('supervisor')" class="w-full flex items-center gap-3 px-4 py-2.5 bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-400/30 rounded-lg transition-all text-left group">
+              <div class="w-7 h-7 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-orange-300 text-sm">manage_accounts</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-[11px] font-bold text-white/80 uppercase tracking-wider">Supervisor</div>
+                <div class="text-[9px] text-white/35 font-mono">carlos@acelera.gov.br</div>
+              </div>
+              <span class="material-symbols-outlined text-white/20 group-hover:text-orange-300/70 text-sm transition-colors">arrow_forward</span>
+            </button>
+            <button onclick="quickLogin('operador')" class="w-full flex items-center gap-3 px-4 py-2.5 bg-white/5 hover:bg-emerald-500/15 border border-white/10 hover:border-emerald-400/30 rounded-lg transition-all text-left group">
+              <div class="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-emerald-300 text-sm">analytics</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-[11px] font-bold text-white/80 uppercase tracking-wider">Operador</div>
+                <div class="text-[9px] text-white/35 font-mono">ana@acelera.gov.br</div>
+              </div>
+              <span class="material-symbols-outlined text-white/20 group-hover:text-emerald-300/70 text-sm transition-colors">arrow_forward</span>
+            </button>
           </div>
-          <div id="demo-hint-supervisor" style="display:none">
-            <p class="text-xs font-semibold opacity-90">carlos@acelera.gov.br</p>
-            <p class="text-xs opacity-60 font-mono">Supervisor — Equipe Alpha</p>
-          </div>
-          <div id="demo-hint-analista" style="display:none">
-            <p class="text-xs font-semibold opacity-90">ana@acelera.gov.br</p>
-            <p class="text-xs opacity-60 font-mono">Analista — Equipe Alpha</p>
-          </div>
-          <p class="text-xs opacity-50 mt-2 font-mono">Senha: demo123</p>
         </div>
       </div>
     </div>
@@ -127,7 +146,7 @@
                 <span class="material-symbols-outlined block text-lg mb-1">manage_accounts</span>Supervisor
               </button>
               <button type="button" data-role="analista" class="role-btn border border-slate-200 rounded-lg px-3 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:border-primary/40">
-                <span class="material-symbols-outlined block text-lg mb-1">analytics</span>Analista
+                <span class="material-symbols-outlined block text-lg mb-1">analytics</span>Operador
               </button>
             </div>
             <input type="hidden" id="selected-role" value="coordenador"/>
@@ -162,41 +181,63 @@
 </footer>
 <script src="assets/js/api.js"></script>
 <script>
-  const DEMO_EMAILS = {
-    coordenador: { email: 'eduardo@acelera.gov.br', label: 'Coordenador Regional' },
-    supervisor: { email: 'carlos@acelera.gov.br', label: 'Supervisor — Equipe Alpha' },
-    analista: { email: 'ana@acelera.gov.br', label: 'Analista — Equipe Alpha' },
+  const ROLE_MAP = {
+    coordenador: 'dashboard-coordenador.html',
+    supervisor:  'dashboard-supervisor.html',
+    analista:    'dashboard-analista.html',
+    admin:       'dashboard-coordenador.html'
   };
 
-  // Role selector
-  const roleButtons = document.querySelectorAll('.role-btn');
-  const roleInput = document.getElementById('selected-role');
-  roleButtons.forEach(btn => {
+  const QUICK_CREDS = {
+    coordenador: { email: 'eduardo@acelera.gov.br', password: 'demo123' },
+    supervisor:  { email: 'carlos@acelera.gov.br',  password: 'demo123' },
+    operador:    { email: 'ana@acelera.gov.br',      password: 'demo123' },
+  };
+
+  // Role selector (manual form)
+  document.querySelectorAll('.role-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      roleButtons.forEach(b => {
-        b.classList.remove('active');
-        b.classList.add('border-slate-200', 'text-slate-500');
-        b.classList.remove('border-primary/20', 'text-primary');
+      document.querySelectorAll('.role-btn').forEach(b => {
+        b.classList.remove('active','border-primary/20','text-primary');
+        b.classList.add('border-slate-200','text-slate-500');
       });
       btn.classList.add('active');
-      btn.classList.remove('border-slate-200', 'text-slate-500');
-      const role = btn.dataset.role;
-      roleInput.value = role;
-      // Update demo hint
-      Object.keys(DEMO_EMAILS).forEach(r => {
-        const el = document.getElementById('demo-hint-' + r);
-        if (el) el.style.display = r === role ? '' : 'none';
-      });
-      // Pre-fill email
-      const emailInput = document.getElementById('email');
-      if (emailInput && DEMO_EMAILS[role]) emailInput.value = DEMO_EMAILS[role].email;
+      btn.classList.remove('border-slate-200','text-slate-500');
+      document.getElementById('selected-role').value = btn.dataset.role;
     });
   });
 
-  // Pre-fill coordenador email on load
-  document.getElementById('email').value = DEMO_EMAILS.coordenador.email;
+  // Quick login (1 click)
+  window.quickLogin = async function(role) {
+    const creds = QUICK_CREDS[role];
+    if (!creds) return;
+    document.getElementById('email').value = creds.email;
+    document.getElementById('access-code').value = creds.password;
+    const errDiv = document.getElementById('error-msg');
+    errDiv.style.display = 'none';
+    const btn = document.getElementById('login-btn');
+    const btnText = document.getElementById('login-btn-text');
+    btn.disabled = true;
+    btnText.textContent = 'Entrando...';
+    try {
+      const result = await ACELERA_API.login(creds.email, creds.password);
+      if (result && result.token) {
+        ACELERA_API.setToken(result.token);
+        ACELERA_API.setUser(result.user);
+        window.location.href = ROLE_MAP[result.user.role] || 'index.html';
+      } else {
+        document.getElementById('error-text').textContent = result?.error || 'Erro ao entrar.';
+        errDiv.style.display = 'flex';
+        btn.disabled = false; btnText.textContent = 'Entrar no Sistema';
+      }
+    } catch (e) {
+      document.getElementById('error-text').textContent = 'Erro de conexão com o servidor.';
+      errDiv.style.display = 'flex';
+      btn.disabled = false; btnText.textContent = 'Entrar no Sistema';
+    }
+  };
 
-  // Form submit
+  // Manual form submit (for admin and custom logins)
   document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const email = document.getElementById('email').value.trim();
@@ -205,34 +246,29 @@
     const btnText = document.getElementById('login-btn-text');
     const errDiv = document.getElementById('error-msg');
     errDiv.style.display = 'none';
-    btn.disabled = true;
-    btnText.textContent = 'Autenticando...';
+    btn.disabled = true; btnText.textContent = 'Autenticando...';
     try {
       const result = await ACELERA_API.login(email, password);
       if (result && result.token) {
         ACELERA_API.setToken(result.token);
         ACELERA_API.setUser(result.user);
-      const map = { coordenador: 'dashboard-coordenador.html', supervisor: 'dashboard-supervisor.html', analista: 'dashboard-analista.html', admin: 'dashboard-coordenador.html' };
-        window.location.href = map[result.user.role] || 'index.html';
+        window.location.href = ROLE_MAP[result.user.role] || 'index.html';
       } else {
-        document.getElementById('error-text').textContent = result?.error || 'Credenciais inválidas. Verifique e-mail e senha.';
+        document.getElementById('error-text').textContent = result?.error || 'Credenciais inválidas.';
         errDiv.style.display = 'flex';
-        btn.disabled = false;
-        btnText.textContent = 'Entrar no Sistema';
+        btn.disabled = false; btnText.textContent = 'Entrar no Sistema';
       }
     } catch (err) {
       document.getElementById('error-text').textContent = 'Erro de conexão com o servidor.';
       errDiv.style.display = 'flex';
-      btn.disabled = false;
-      btnText.textContent = 'Entrar no Sistema';
+      btn.disabled = false; btnText.textContent = 'Entrar no Sistema';
     }
   });
 
   // If already logged in, redirect
   const session = ACELERA_API.getUser();
-  if (session && ACELERA_API.getToken()) {
-    const map = { coordenador: 'dashboard-coordenador.html', supervisor: 'dashboard-supervisor.html', analista: 'dashboard-analista.html', admin: 'dashboard-coordenador.html' };
-    if (map[session.role]) window.location.href = map[session.role];
+  if (session && ACELERA_API.getToken() && ROLE_MAP[session.role]) {
+    window.location.href = ROLE_MAP[session.role];
   }
 </script>
 </body>
