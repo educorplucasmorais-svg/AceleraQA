@@ -117,6 +117,26 @@
         <h1 id="page-title" class="text-lg font-bold text-on-surface leading-tight">Visão Geral</h1>
       </div>
       <div class="flex items-center gap-3">
+        <!-- Score chip -->
+        <div class="hidden sm:flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-full px-4 py-1.5">
+          <span class="material-symbols-outlined text-primary text-base" style="font-variation-settings:'FILL' 1">speed</span>
+          <div class="flex items-center gap-2">
+            <div class="text-center">
+              <span class="text-[9px] uppercase tracking-wider text-primary/60 block leading-none">Score</span>
+              <span class="jet text-sm font-bold text-primary leading-none">84.2</span>
+            </div>
+            <div class="w-px h-5 bg-primary/20"></div>
+            <div class="text-center">
+              <span class="text-[9px] uppercase tracking-wider text-on-surface-variant block leading-none">TGT</span>
+              <span class="jet text-sm font-bold text-on-surface-variant leading-none">88</span>
+            </div>
+            <div class="w-px h-5 bg-primary/20"></div>
+            <div class="text-center">
+              <span class="text-[9px] uppercase tracking-wider text-amber-500 block leading-none">Ating.</span>
+              <span class="jet text-sm font-bold text-amber-500 leading-none">95.7%</span>
+            </div>
+          </div>
+        </div>
         <!-- Notification bell -->
         <div class="relative">
           <button onclick="toggleNotifications()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant transition relative">

@@ -121,6 +121,26 @@
       <h1 id="page-title" class="text-xl font-bold text-on-surface leading-tight">Dashboard</h1>
     </div>
     <div class="flex items-center gap-3">
+      <!-- Score chip -->
+      <div class="hidden sm:flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-full px-4 py-1.5">
+        <span class="material-symbols-outlined text-primary text-base" style="font-variation-settings:'FILL' 1">speed</span>
+        <div class="flex items-center gap-2">
+          <div class="text-center">
+            <span class="text-[9px] uppercase tracking-wider text-primary/60 block leading-none">Score</span>
+            <span class="jet text-sm font-bold text-primary leading-none">84.2</span>
+          </div>
+          <div class="w-px h-5 bg-primary/20"></div>
+          <div class="text-center">
+            <span class="text-[9px] uppercase tracking-wider text-on-surface-variant block leading-none">TGT</span>
+            <span class="jet text-sm font-bold text-on-surface-variant leading-none">88</span>
+          </div>
+          <div class="w-px h-5 bg-primary/20"></div>
+          <div class="text-center">
+            <span class="text-[9px] uppercase tracking-wider text-amber-500 block leading-none">Ating.</span>
+            <span class="jet text-sm font-bold text-amber-500 leading-none">95.7%</span>
+          </div>
+        </div>
+      </div>
       <!-- Notification bell -->
       <div class="relative">
         <button onclick="toggleNotifications()"
@@ -242,7 +262,7 @@
       </div>
 
       <!-- Breakdown cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div class="bg-white rounded-xl border border-outline-variant p-5">
           <div class="flex items-center gap-2 mb-3">
             <span class="material-symbols-outlined text-xl text-amber-500" style="font-variation-settings:'FILL' 1">stars</span>
@@ -289,30 +309,6 @@
           </div>
           <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
             <div class="h-full bg-amber-500 rounded-full" style="width:96.5%"></div>
-          </div>
-        </div>
-        <div class="bg-white rounded-xl border border-outline-variant p-5">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="material-symbols-outlined text-xl text-emerald-600" style="font-variation-settings:'FILL' 1">verified</span>
-            <span class="text-xs text-on-surface-variant uppercase tracking-wide">Conformidade</span>
-          </div>
-          <!-- TGT row -->
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">TGT · Meta</span>
-            <span class="jet text-sm font-bold text-on-surface-variant">92</span>
-          </div>
-          <!-- Resultado row -->
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Resultado</span>
-            <span class="jet text-sm font-bold text-on-surface">95</span>
-          </div>
-          <!-- % Atingimento row -->
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">% Atingimento</span>
-            <span class="jet text-base font-extrabold text-emerald-600">103.3%</span>
-          </div>
-          <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
-            <div class="h-full bg-emerald-500 rounded-full" style="width:100%"></div>
           </div>
         </div>
       </div>

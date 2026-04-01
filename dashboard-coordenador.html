@@ -97,6 +97,26 @@ tailwind.config = {
       <p id="page-subtitle" class="text-xs text-on-surface-variant">Plataforma ACELERA — Inteligência Comportamental</p>
     </div>
     <div class="flex items-center gap-3">
+      <!-- Score chip -->
+      <div class="hidden sm:flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-full px-4 py-1.5">
+        <span class="material-symbols-outlined text-primary text-base" style="font-variation-settings:'FILL' 1">speed</span>
+        <div class="flex items-center gap-2">
+          <div class="text-center">
+            <span class="text-[9px] uppercase tracking-wider text-primary/60 block leading-none">Score Org.</span>
+            <span class="jet text-sm font-bold text-primary leading-none">87.4</span>
+          </div>
+          <div class="w-px h-5 bg-primary/20"></div>
+          <div class="text-center">
+            <span class="text-[9px] uppercase tracking-wider text-on-surface-variant block leading-none">TGT</span>
+            <span class="jet text-sm font-bold text-on-surface-variant leading-none">90</span>
+          </div>
+          <div class="w-px h-5 bg-primary/20"></div>
+          <div class="text-center">
+            <span class="text-[9px] uppercase tracking-wider text-amber-500 block leading-none">Ating.</span>
+            <span class="jet text-sm font-bold text-amber-500 leading-none">97.1%</span>
+          </div>
+        </div>
+      </div>
       <button onclick="toggleNotifications()" class="relative p-2 rounded-full hover:bg-surface-container">
         <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
         <span id="notif-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-secondary-container text-white text-[10px] rounded-full flex items-center justify-center hidden">0</span>
